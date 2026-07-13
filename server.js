@@ -1,19 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
+// Inicializamos Stripe usando la llave secreta de las variables de entorno
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Conexión a la Base de Datos (Render inyectará esto automáticamente)
+// Conexión a la Base de Datos PostgreSQL de Render
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // Requerido por Render para conexiones seguras
+    ssl: { rejectUnauthorized: false } // Obligatorio para la seguridad de Render
 });
 
-// ============================================================
-// ¡LA MAGIA AQUÍ! Función para crear las tablas automáticamente
-// ============================================================
+// Función auto-instalable de la base de datos
 async function inicializarBaseDeDatos() {
     const scriptSQL = `
         CREATE TABLE IF NOT EXISTS usuarios (
@@ -61,72 +61,80 @@ async function inicializarBaseDeDatos() {
             FOREIGN KEY (placa_id) REFERENCES placas(id) ON DELETE CASCADE
         );
 
-        -- Crear los índices si no existen
-        CREATE INDEX IF NOT EXISTS idx_placas_codigo ON placas(codigo_qr_unico);
-        CREATE INDEX IF NOT EXISTS idx_mascotas_usuario ON mascotas(usuario_id);
-        CREATE INDEX IF NOT EXISTS idx_escaneos_placa ON historial_escaneos(placa_id);
+        CREATE TABLE IF NOT EXISTS IF NOT EXISTS idx_placas_codigo ON placas(codigo_qr_unico);
     `;
-
     try {
-        console.log('Verificando e inicializando tablas en la Base de Datos...');
         await pool.query(scriptSQL);
-        console.log('¡Base de datos estructurada correctamente!');
+        console.log('¡Base de datos verificada y lista en la nube!');
     } catch (error) {
-        console.error('Error al inicializar la base de datos:', error);
+        console.error('Error al inicializar la BD:', error);
     }
 }
 
 // Middlewares
 app.use(cors());
-// Le dice a Express que sirva los archivos HTML, CSS e imágenes automáticamente
-app.use(express.static(__dirname));
 app.use(express.json());
+app.use(express.static(__dirname)); // Sirve tus archivos HTML automáticamente en la raíz
 
-// API ENDPOINT: Recibir Escaneo de Placa
+// ============================================================
+// PASO CLAVE: ENDPOINT PARA CREAR EL CHECKOUT DE STRIPE
+// ============================================================
+app.post('/api/v1/crear-checkout', async (req, res) => {
+    const { plan } = req.body; // Recibe 'basico' o 'guardian' desde index.html
+    
+    // Configuración dinámica de IDs basados en tus productos de Stripe
+    let priceId = '';
+    let modeType = 'payment'; // 'payment' para cobro único
+
+    if (plan === 'guardian') {
+        priceId = process.env.STRIPE_PRICE_GUARDIAN; // ID de la suscripción mensual
+        modeType = 'subscription';                  // Cambia el modo a suscripción
+    } else {
+        priceId = process.env.STRIPE_PRICE_BASICO;   // ID del pago único de la placa
+        modeType = 'payment';
+    }
+
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{ price: priceId, quantity: 1 }],
+            mode: modeType,
+            // Redirecciones tras el pago
+            success_url: `${req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${req.headers.origin}/index.html`,
+        });
+
+        // Enviamos la URL de Stripe generada para la redirección
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error('Error al crear sesión de cobro:', error);
+        res.status(500).json({ error: 'No se pudo procesar la pasarela de pago.' });
+    }
+});
+
+// Endpoint para guardar coordenadas GPS del rescatista
 app.post('/api/v1/escaneos', async (req, res) => {
     const { codigo_qr_interno, latitud, longitud } = req.body;
     const userAgent = req.headers['user-agent']; 
 
-    if (!codigo_qr_interno) {
-        return res.status(400).json({ success: false, error: 'El código de la placa es requerido.' });
-    }
-
     try {
         const placaQuery = await pool.query(
-            `SELECT p.id AS placa_id, m.nombre_mascota, u.email, u.telefono_contacto 
-             FROM placas p
-             JOIN mascotas m ON p.mascota_id = m.id
-             JOIN usuarios u ON m.usuario_id = u.id
-             WHERE p.codigo_qr_unico = $1`,
-            [codigo_qr_interno]
+            `SELECT id FROM placas WHERE codigo_qr_unico = $1`, [codigo_qr_interno]
         );
-
-        if (placaQuery.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Placa no registrada.' });
+        if (placaQuery.rows.length > 0) {
+            await pool.query(
+                `INSERT INTO historial_escaneos (placa_id, latitud, longitud, user_agent) VALUES ($1, $2, $3, $4)`,
+                [placaQuery.rows[0].id, latitud, longitud, userAgent]
+            );
         }
-
-        const infoRescate = placaQuery.rows[0];
-
-        await pool.query(
-            `INSERT INTO historial_escaneos (placa_id, latitud, longitud, user_agent) 
-             VALUES ($1, $2, $3, $4)`,
-            [infoRescate.placa_id, latitud || null, longitud || null, userAgent]
-        );
-
-        return res.status(200).json({
-            success: true,
-            message: 'Ubicación procesada. Notificación enviada.'
-        });
-
+        res.json({ success: true });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, error: 'Error interno.' });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Levantar el servidor e inicializar la base de datos
+// Encendido del servidor
 app.listen(PORT, async () => {
-    console.log(`Servidor de SmartPet ID corriendo en el puerto ${PORT}`);
-    // Ejecutamos la creación de tablas justo al encender
+    console.log(`SmartPet Backend en puerto ${PORT}`);
     await inicializarBaseDeDatos();
 });
