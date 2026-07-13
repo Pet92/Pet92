@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartPet ID - Tu mascota siempre segura</title>
-    <!-- Fuentes de Google: Poppins para títulos y Lato para texto -->
+    <!-- Fuentes oficiales del proyecto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome para iconos de patitas/seguridad -->
+    <!-- Iconos para diseño visual -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* 1. Reset Global y Buenas Prácticas de Caja */
+        /* ==========================================
+           1. ESTILOS GLOBALES Y RESET
+           ========================================== */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -27,7 +29,22 @@
             overflow-x: hidden;
         }
 
-        /* 2. Contenedor del Navbar */
+        .badge {
+            display: inline-block;
+            background-color: #D1E8E2; /* Verde Salvia */
+            color: #2E4D68;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================
+           2. MENÚ DE NAVEGACIÓN (NAVBAR)
+           ========================================== */
         .navbar {
             display: table;
             width: 100%;
@@ -42,12 +59,12 @@
             font-family: 'Poppins', sans-serif;
             font-size: 24px;
             font-weight: 700;
-            color: #2E4D68; /* Azul Oscuro */
+            color: #2E4D68;
             text-decoration: none;
         }
 
         .logo span {
-            color: #E7717D; /* Acento Coral */
+            color: #E7717D; /* Coral */
         }
 
         .nav-links {
@@ -64,10 +81,12 @@
             margin-left: 20px;
         }
 
-        /* 3. Estructura de la Sección Hero (Layout Responsivo sin Flex/Grid) */
+        /* ==========================================
+           3. SECCIÓN HERO PRINCIPAL
+           ========================================== */
         .hero-section {
             max-width: 1200px;
-            margin: 40px auto;
+            margin: 40px auto 80px auto;
             padding: 0 24px;
             display: table;
             width: 100%;
@@ -80,22 +99,8 @@
             padding: 20px;
         }
 
-        /* Ajustes específicos para la columna de texto */
         .hero-text-content {
             padding-right: 40px;
-        }
-
-        .badge {
-            display: inline-block;
-            background-color: #D1E8E2; /* Verde Salvia */
-            color: #2E4D68;
-            font-weight: 700;
-            font-size: 14px;
-            padding: 6px 16px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         h1 {
@@ -116,10 +121,9 @@
             color: #64748B;
         }
 
-        /* Botón de Acción (Call To Action) */
-        .cta-button {
+        .hero-cta-btn {
             display: inline-block;
-            background-color: #E7717D; /* Coral */
+            background-color: #E7717D;
             color: white;
             font-family: 'Poppins', sans-serif;
             font-size: 18px;
@@ -131,13 +135,9 @@
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
-        .cta-button:hover {
+        .hero-cta-btn:hover {
             background-color: #d65d69;
             transform: translateY(-2px);
-        }
-
-        .cta-button i {
-            margin-left: 8px;
         }
 
         .shipping-notice {
@@ -151,7 +151,6 @@
             margin-right: 5px;
         }
 
-        /* Columna de la Imagen */
         .hero-image-wrapper {
             position: relative;
             text-align: center;
@@ -165,7 +164,6 @@
             display: inline-block;
         }
 
-        /* Tarjeta Flotante Informativa */
         .floating-card {
             position: absolute;
             bottom: 30px;
@@ -191,13 +189,166 @@
             color: #64748B;
         }
 
-        /* 4. RESPONSIVIDAD (Media Query para Móviles) */
+        /* ==========================================
+           4. SECCIÓN TABLA DE PRECIOS
+           ========================================== */
+        .pricing-section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 24px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .pricing-header h2 {
+            font-family: 'Poppins', sans-serif;
+            color: #2E4D68;
+            font-size: 36px;
+            margin: 10px 0;
+        }
+
+        .pricing-container {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 24px 0;
+        }
+
+        .price-card {
+            display: table-cell;
+            width: 50%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05);
+            border: 2px solid #E2E8F0;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .price-card.featured {
+            border-color: #E7717D;
+            box-shadow: 0 15px 35px rgba(231, 113, 125, 0.15);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #E7717D;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .price-card h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2E4D68;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .price-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2E4D68;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .price-amount span {
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        .price-amount small {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 400;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .plan-subtitle {
+            color: #64748B;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .plan-features li {
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #475569;
+        }
+
+        .plan-features li i.fa-check {
+            color: #25D366;
+            margin-right: 10px;
+        }
+
+        .plan-features li i.fa-xmark {
+            color: #94A3B8;
+            margin-right: 13px;
+            margin-left: 3px;
+        }
+
+        .plan-features li.disabled {
+            color: #94A3B8;
+            text-decoration: line-through;
+        }
+
+        .btn-checkout {
+            display: block;
+            text-align: center;
+            padding: 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .plan-basic-btn {
+            background-color: #F1F5F9;
+            color: #2E4D68;
+            border: 1px solid #CBD5E1;
+        }
+
+        .plan-basic-btn:hover {
+            background-color: #E2E8F0;
+        }
+
+        .plan-featured-btn {
+            background-color: #E7717D;
+            color: white;
+        }
+
+        .plan-featured-btn:hover {
+            background-color: #d65d69;
+        }
+
+        /* ==========================================
+           5. RESPONSIVIDAD GENERAL (MÓVILES)
+           ========================================== */
         @media screen and (max-width: 768px) {
-            .navbar, .hero-section {
+            .navbar, .hero-section, .pricing-container {
                 display: block;
             }
 
-            .logo, .nav-links, .hero-column {
+            .logo, .nav-links, .hero-column, .price-card {
                 display: block;
                 width: 100%;
                 text-align: center;
@@ -222,8 +373,12 @@
 
             .floating-card {
                 left: 50%;
-                margin-left: -120px; /* Centrado en móviles */
+                margin-left: -120px;
                 bottom: -20px;
+            }
+
+            .price-card {
+                margin-bottom: 40px;
             }
         }
     </style>
@@ -234,15 +389,13 @@
     <header class="navbar">
         <a href="#" class="logo">SmartPet<span>ID</span></a>
         <nav class="nav-links">
-            <a href="#como-funciona">¿Cómo funciona?</a>
-            <a href="#precios">Precios</a>
-            <a href="#" class="cta-small" style="color: #E7717D;">Iniciar Sesión</a>
+            <a href="#precios">Planes y Precios</a>
+            <a href="mailto:soporte@smartpetid.com">Soporte</a>
         </nav>
     </header>
 
     <!-- Sección Principal (Hero) -->
     <section class="hero-section">
-        <!-- Columna Izquierda: Mensaje de Venta -->
         <div class="hero-column">
             <div class="hero-text-content">
                 <span class="badge"><i class="fa-solid fa-shield-dog"></i> Lanzamiento Oficial</span>
@@ -250,25 +403,18 @@
                 <p class="hero-description">
                     Si tu mascota se pierde, cualquier persona puede escanear su placa con su celular. Recibirás una alerta instantánea con su ubicación GPS y el rescatista podrá contactarte en un clic. Sin aplicaciones necesarias.
                 </p>
-                
-                <!-- Botón de compra que irá hacia Stripe -->
-                <a href="#comprar" class="cta-button">
-                    Proteger a mi mascota <i class="fa-solid fa-arrow-right"></i>
+                <a href="#precios" class="hero-cta-btn">
+                    Ver Planes de Protección <i class="fa-solid fa-arrow-down"></i>
                 </a>
-                
                 <p class="shipping-notice">
                     <i class="fa-solid fa-truck-fast"></i> Envíos rápidos a todo México y USA.
                 </p>
             </div>
         </div>
 
-        <!-- Columna Derecha: Imagen del Producto / Mascota -->
         <div class="hero-column">
             <div class="hero-image-wrapper">
-                <!-- Imagen ilustrativa de perro feliz con placa -->
                 <img src="http://googleusercontent.com/image_collection/image_retrieval/6252221593101686693" alt="Perro protegido con placa SmartPet ID" class="main-hero-image">
-                
-                <!-- Tarjeta interactiva/flotante simulando una alerta -->
                 <div class="floating-card">
                     <h4><i class="fa-solid fa-location-dot" style="color: #E7717D;"></i> ¡Alerta de Escaneo!</h4>
                     <p>Placa de 'Max' escaneada. Ubicación compartida con el dueño.</p>
@@ -277,5 +423,104 @@
         </div>
     </section>
 
+    <!-- Sección de Precios -->
+    <section id="precios" class="pricing-section">
+        <div class="pricing-header">
+            <span class="badge"><i class="fa-solid fa-tags"></i> Cobertura Mex / USA</span>
+            <h2>Elige la protección ideal para tu compañero</h2>
+            <p>Precios transparentes y accesibles. Protege a tu peludo hoy mismo.</p>
+        </div>
+
+        <div class="pricing-container">
+            <!-- PLAN BÁSICO -->
+            <div class="price-card">
+                <h3>Plan Esencial</h3>
+                <div class="price-amount">$299 <span>MXN</span> <small>/ Pago Único</small></div>
+                <p class="plan-subtitle">Ideal para protección básica en la calle.</p>
+                
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> Placa física grabada en láser</li>
+                    <li><i class="fa-solid fa-check"></i> Envío a domicilio incluido</li>
+                    <li><i class="fa-solid fa-check"></i> Perfil digital de por vida</li>
+                    <li><i class="fa-solid fa-check"></i> Botones de llamada directa al dueño</li>
+                    <li class="disabled"><i class="fa-solid fa-xmark"></i> Alertas de ubicación GPS</li>
+                    <li class="disabled"><i class="fa-solid fa-xmark"></i> Notificaciones por WhatsApp</li>
+                </ul>
+
+                <a href="#" class="btn-checkout plan-basic-btn" data-plan="basico">
+                    Comprar Placa <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- PLAN GUARDIÁN (DESTACADO) -->
+            <div class="price-card featured">
+                <div class="featured-badge">Más Recomendado</div>
+                <h3>Plan Guardián</h3>
+                <div class="price-amount">$39 <span>MXN</span> <small>/ mes</small></div>
+                <p class="plan-subtitle">Protección avanzada con alertas en tiempo real.</p>
+                
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> Todo lo del Plan Esencial</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Alertas GPS instantáneas</strong> al mapa</li>
+                    <li><i class="fa-solid fa-check"></i> Aviso automático por <strong>WhatsApp y Email</strong></li>
+                    <li><i class="fa-solid fa-check"></i> Historial clínico digital de vacunas</li>
+                    <li><i class="fa-solid fa-check"></i> Generador de cartel "Se Busca" en 1 clic</li>
+                    <li><i class="fa-solid fa-check"></i> Soporte prioritario 24/7</li>
+                </ul>
+
+                <a href="#" class="btn-checkout plan-featured-btn" data-plan="guardian">
+                    Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LÓGICA DE CONEXIÓN A STRIPE VIA BACKEND -->
+    <script>
+        document.querySelectorAll('.btn-checkout').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const planSeleccionado = e.target.closest('.btn-checkout').getAttribute('data-plan');
+                
+                button.innerText = "Procesando...";
+                button.style.opacity = "0.7";
+
+                try {
+                    // Llamamos a tu servidor API en Render
+                    const response = await fetch('/api/v1/crear-checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ plan: planSeleccionado })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.url) {
+                        // Redirigimos a la pasarela segura de Stripe
+                        window.location.href = data.url;
+                    } else {
+                        alert('Error al generar la pasarela de pago.');
+                        resetButton(button, planSeleccionado);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert('No se pudo conectar con el servidor.');
+                    resetButton(button, planSeleccionado);
+                }
+            });
+        });
+
+        function resetButton(btn, plan) {
+            btn.style.opacity = "1";
+            if(plan === 'basico') {
+                btn.innerHTML = 'Comprar Placa <i class="fa-solid fa-arrow-right"></i>';
+            } else {
+                btn.innerHTML = 'Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i>';
+            }
+        }
+    </script>
 </body>
 </html>
