@@ -78,6 +78,8 @@ async function inicializarBaseDeDatos() {
 
 // Middlewares
 app.use(cors());
+// Le dice a Express que sirva los archivos HTML, CSS e imágenes automáticamente
+app.use(express.static(__dirname));
 app.use(express.json());
 
 // API ENDPOINT: Recibir Escaneo de Placa
