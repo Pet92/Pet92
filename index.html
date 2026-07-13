@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPet ID - Tu mascota siempre segura</title>
+    <!-- Fuentes de Google: Poppins para títulos y Lato para texto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos de patitas/seguridad -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 1. Reset Global y Buenas Prácticas de Caja */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FFFBF1; /* Fondo Crema Cálido */
+            color: #475569;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 2. Contenedor del Navbar */
+        .navbar {
+            display: table;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+        
+        .logo {
+            display: table-cell;
+            vertical-align: middle;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2E4D68; /* Azul Oscuro */
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #E7717D; /* Acento Coral */
+        }
+
+        .nav-links {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+        }
+
+        .nav-links a {
+            color: #2E4D68;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+
+        /* 3. Estructura de la Sección Hero (Layout Responsivo sin Flex/Grid) */
+        .hero-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+            display: table;
+            width: 100%;
+        }
+
+        .hero-column {
+            display: table-cell;
+            width: 50%;
+            vertical-align: middle;
+            padding: 20px;
+        }
+
+        /* Ajustes específicos para la columna de texto */
+        .hero-text-content {
+            padding-right: 40px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #D1E8E2; /* Verde Salvia */
+            color: #2E4D68;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 42px;
+            color: #2E4D68;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        h1 span {
+            color: #E7717D;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            margin-bottom: 35px;
+            color: #64748B;
+        }
+
+        /* Botón de Acción (Call To Action) */
+        .cta-button {
+            display: inline-block;
+            background-color: #E7717D; /* Coral */
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 16px 36px;
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(231, 113, 125, 0.4);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #d65d69;
+            transform: translateY(-2px);
+        }
+
+        .cta-button i {
+            margin-left: 8px;
+        }
+
+        .shipping-notice {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #94A3B8;
+        }
+
+        .shipping-notice i {
+            color: #2E4D68;
+            margin-right: 5px;
+        }
+
+        /* Columna de la Imagen */
+        .hero-image-wrapper {
+            position: relative;
+            text-align: center;
+        }
+
+        .main-hero-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(46, 77, 104, 0.15);
+            display: inline-block;
+        }
+
+        /* Tarjeta Flotante Informativa */
+        .floating-card {
+            position: absolute;
+            bottom: 30px;
+            left: -20px;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: left;
+            border-left: 5px solid #D1E8E2;
+            width: 240px;
+        }
+
+        .floating-card h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2E4D68;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .floating-card p {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        /* 4. RESPONSIVIDAD (Media Query para Móviles) */
+        @media screen and (max-width: 768px) {
+            .navbar, .hero-section {
+                display: block;
+            }
+
+            .logo, .nav-links, .hero-column {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            .nav-links {
+                margin-top: 15px;
+            }
+
+            .nav-links a {
+                margin: 0 10px;
+            }
+
+            .hero-text-content {
+                padding-right: 0;
+                margin-bottom: 40px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .floating-card {
+                left: 50%;
+                margin-left: -120px; /* Centrado en móviles */
+                bottom: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menú de Navegación -->
+    <header class="navbar">
+        <a href="#" class="logo">SmartPet<span>ID</span></a>
+        <nav class="nav-links">
+            <a href="#como-funciona">¿Cómo funciona?</a>
+            <a href="#precios">Precios</a>
+            <a href="#" class="cta-small" style="color: #E7717D;">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <!-- Sección Principal (Hero) -->
+    <section class="hero-section">
+        <!-- Columna Izquierda: Mensaje de Venta -->
+        <div class="hero-column">
+            <div class="hero-text-content">
+                <span class="badge"><i class="fa-solid fa-shield-dog"></i> Lanzamiento Oficial</span>
+                <h1>La placa inteligente que trae a tu mejor amigo <span>de vuelta a casa</span></h1>
+                <p class="hero-description">
+                    Si tu mascota se pierde, cualquier persona puede escanear su placa con su celular. Recibirás una alerta instantánea con su ubicación GPS y el rescatista podrá contactarte en un clic. Sin aplicaciones necesarias.
+                </p>
+                
+                <!-- Botón de compra que irá hacia Stripe -->
+                <a href="#comprar" class="cta-button">
+                    Proteger a mi mascota <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                
+                <p class="shipping-notice">
+                    <i class="fa-solid fa-truck-fast"></i> Envíos rápidos a todo México y USA.
+                </p>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Imagen del Producto / Mascota -->
+        <div class="hero-column">
+            <div class="hero-image-wrapper">
+                <!-- Imagen ilustrativa de perro feliz con placa -->
+                <img src="http://googleusercontent.com/image_collection/image_retrieval/6252221593101686693" alt="Perro protegido con placa SmartPet ID" class="main-hero-image">
+                
+                <!-- Tarjeta interactiva/flotante simulando una alerta -->
+                <div class="floating-card">
+                    <h4><i class="fa-solid fa-location-dot" style="color: #E7717D;"></i> ¡Alerta de Escaneo!</h4>
+                    <p>Placa de 'Max' escaneada. Ubicación compartida con el dueño.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

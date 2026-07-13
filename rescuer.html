@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Mascota Encontrada! - SmartPet ID</title>
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FFFBF1; /* Mismo fondo crema cálido */
+            color: #475569;
+            line-height: 1.5;
+            padding: 16px;
+        }
+
+        /* Contenedor Principal optimizado para móviles */
+        .rescuer-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(46, 77, 104, 0.08);
+            overflow: hidden;
+            padding-bottom: 30px;
+        }
+
+        /* Banner de Alerta Crítica (Si la mascota está reportada como perdida) */
+        .status-banner {
+            background-color: #E7717D; /* Coral / Alerta */
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sección de la foto de la mascota */
+        .pet-hero {
+            position: relative;
+            text-align: center;
+            padding: 30px 20px 20px 20px;
+            background: linear-gradient(180deg, #D1E8E2 0%, rgba(209, 232, 226, 0.2) 100%); /* Degradado Verde Salvia */
+        }
+
+        .pet-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        .pet-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            color: #2E4D68;
+            margin-top: 12px;
+        }
+
+        /* Información Médica / Notas Críticas */
+        .info-section {
+            padding: 20px 24px;
+        }
+
+        .alert-box {
+            background-color: #FFF0F0;
+            border-left: 4px solid #E7717D;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #C2410C;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .alert-box i {
+            margin-right: 6px;
+        }
+
+        .details-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .details-row {
+            display: table-row;
+        }
+
+        .details-label {
+            display: table-cell;
+            font-weight: 700;
+            color: #2E4D68;
+            padding: 8px 0;
+            width: 35%;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .details-value {
+            display: table-cell;
+            padding: 8px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        /* Sección de Botones de Contacto Gigantes (Fáciles de presionar) */
+        .contact-actions {
+            padding: 0 24px;
+        }
+
+        .action-heading {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            color: #2E4D68;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn-contact {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .btn-call {
+            background-color: #2E4D68;
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background-color: #25D366; /* Verde Oficial WhatsApp */
+            color: white;
+        }
+
+        /* Modal o aviso discreto de Ubicación */
+        .gps-status {
+            text-align: center;
+            font-size: 13px;
+            color: #94A3B8;
+            margin-top: 15px;
+            padding: 0 24px;
+        }
+
+        .gps-status i {
+            color: #2E4D68;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="rescuer-container">
+        
+        <!-- Estado de la Mascota -->
+        <div class="status-banner">
+            <i class="fa-solid fa-triangle-exclamation"></i> ¡ESTOY PERDIDO, AYÚDAME!
+        </div>
+
+        <!-- Cabecera con Foto -->
+        <div class="pet-hero">
+            <!-- Imagen simulada de un perrito rescatado -->
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/10458255148028712804" alt="Foto de la mascota" class="pet-avatar">
+            <h2 class="pet-name">Max</h2>
+        </div>
+
+        <!-- Información Crítica -->
+        <div class="info-section">
+            
+            <!-- Cuadro de Alergias o Cuidados Especiales -->
+            <div class="alert-box">
+                <i class="fa-solid fa-circle-exclamation"></i> Requiere Medicación: Soy diabético y necesito mi insulina.
+            </div>
+
+            <!-- Detalles en Tabla limpia -->
+            <div class="details-grid">
+                <div class="details-row">
+                    <div class="details-label">Especie:</div>
+                    <div class="details-value">Perro (Golden Retriever)</div>
+                </div>
+                <div class="details-row">
+                    <div class="details-label">Mi Hogar:</div>
+                    <div class="details-value">Monterrey, NL (Envios Mex/USA)</div>
+                </div>
+                <div class="details-row">
+                    <div class="details-label">Dueño:</div>
+                    <div class="details-value">Carlos Mendoza</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones de Contacto Inmediato -->
+        <div class="contact-actions">
+            <h3 class="action-heading">Comunícate con mi familia de inmediato:</h3>
+            
+            <!-- Botón de llamada tradicional -->
+            <a href="tel:+528110000000" class="btn-contact btn-call">
+                <i class="fa-solid fa-phone"></i> Llamar al Dueño
+            </a>
+            
+            <!-- Botón de WhatsApp con mensaje personalizado pre-llenado -->
+            <a href="https://wa.me/528110000000?text=Hola!%20Acabo%20de%20encontrar%20a%20tu%20mascota%20Max.%20Escaneé%20su%20placa%20inteligente." class="btn-contact btn-whatsapp" target="_blank">
+                <i class="fa-brands fa-whatsapp"></i> Enviar WhatsApp
+            </a>
+        </div>
+
+        <!-- Estatus de la Geolocalización (Lógica JavaScript trasera) -->
+        <div class="gps-status" id="gps-info">
+            <i class="fa-solid fa-location-crosshairs animate-pulse"></i> Solicitando coordenadas de rescate...
+        </div>
+
+    </div>
+
+    <!-- 5. LÓGICA JAVASCRIPT: Captura Automática de Ubicación GPS -->
+    <script>
+        // Esta función se ejecuta automáticamente cuando la página carga en el celular del rescatista
+        window.addEventListener('DOMContentLoaded', () => {
+            const gpsInfoElement = document.getElementById('gps-info');
+            
+            // Revisa si el navegador del celular soporta Geolocalización
+            if (navigator.geolocation) {
+                
+                // Solicita permisos al usuario de forma nativa
+                navigator.geolocation.getCurrentPosition(
+                    // Caso 1: El usuario ACEPTÓ compartir su ubicación
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        gpsInfoElement.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #25D366;"></i> Ubicación de rescate enviada con éxito al dueño.`;
+                        
+                        // NOTA TÉCNICA: Aquí es donde conectarías tu API/Backend más adelante.
+                        // Harías un fetch POST enviando 'lat' y 'lng' para guardar en la BD y detonar el email/WhatsApp
+                        console.log("Coordenadas capturadas con éxito:", lat, lng);
+                        enviarCoordenadasAlServidor(lat, lng);
+                    },
+                    // Caso 2: El usuario DENEGÓ el permiso o hubo un error de señal
+                    (error) => {
+                        gpsInfoElement.innerHTML = `<i class="fa-solid fa-circle-xmark" style="color: #E7717D;"></i> No pudimos obtener tu GPS, pero puedes llamar al dueño.`;
+                        console.warn("Permiso denegado o error de GPS:", error.message);
+                    },
+                    // Opciones de alta precisión
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                // El navegador es muy antiguo y no tiene soporte
+                gpsInfoElement.innerHTML = "Tu navegador no soporta geolocalización.";
+            }
+        });
+
+        // Función simulada que conectará con tu API más adelante
+        function enviarCoordenadasAlServidor(lat, lng) {
+            // Ejemplo de estructura de fetch hacia tu futuro backend:
+            /*
+            fetch('/api/v1/scans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tag_id: 'qr_max_992', // Código de la placa
+                    latitude: lat,
+                    longitude: lng
+                })
+            });
+            */
+        }
+    </script>
+</body>
+</html>
