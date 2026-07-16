@@ -61,7 +61,7 @@ async function inicializarBaseDeDatos() {
             FOREIGN KEY (placa_id) REFERENCES placas(id) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS IF NOT EXISTS idx_placas_codigo ON placas(codigo_qr_unico);
+        CREATE TABLE IF NOT EXISTS idx_placas_codigo ON placas(codigo_qr_unico);
     `;
     try {
         await pool.query(scriptSQL);
