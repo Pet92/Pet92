@@ -477,50 +477,20 @@
 
     <!-- LÓGICA DE CONEXIÓN A STRIPE VIA BACKEND -->
     <script>
-        document.querySelectorAll('.btn-checkout').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                
-                const planSeleccionado = e.target.closest('.btn-checkout').getAttribute('data-plan');
-                
-                button.innerText = "Procesando...";
-                button.style.opacity = "0.7";
-
-                try {
-                    // Llamamos a tu servidor API en Render
-                    const response = await fetch('/api/v1/crear-checkout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ plan: planSeleccionado })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.url) {
-                        // Redirigimos a la pasarela segura de Stripe
-                        window.location.href = data.url;
-                    } else {
-                        alert('Error al generar la pasarela de pago.');
-                        resetButton(button, planSeleccionado);
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert('No se pudo conectar con el servidor.');
-                    resetButton(button, planSeleccionado);
-                }
-            });
+    document.querySelectorAll('.btn-checkout').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Detectamos qué plan seleccionó ('basico' o 'guardian')
+            const planSeleccionado = e.target.closest('.btn-checkout').getAttribute('data-plan');
+            
+            // Guardamos temporalmente la elección en el navegador del usuario
+            localStorage.setItem('plan_seleccionado', planSeleccionado);
+            
+            // Redireccionamos de inmediato a la página del formulario
+            window.location.href = 'registro.html';
         });
-
-        function resetButton(btn, plan) {
-            btn.style.opacity = "1";
-            if(plan === 'basico') {
-                btn.innerHTML = 'Comprar Placa <i class="fa-solid fa-arrow-right"></i>';
-            } else {
-                btn.innerHTML = 'Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i>';
-            }
-        }
-    </script>
+    });
+</script>
 </body>
 </html>
