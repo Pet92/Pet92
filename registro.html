@@ -156,20 +156,52 @@
                 return;
             }
 
-            // Recopilamos todos los datos del formulario
-            const perfilMascota = {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerText = "Preparando pasarela de pago segura...";
+            submitBtn.disabled = true;
+
+            // 1. Recuperamos el plan que el usuario seleccionó en la Landing Page
+            // Si no encuentra nada, le asignamos 'basico' por defecto
+            const planEnMemoria = localStorage.getItem('plan_selected') || localStorage.getItem('plan_seleccionado') || 'basico';
+
+            // 2. Recopilamos todos los datos estructurados del formulario
+            const datosPayload = {
                 nombre_mascota: document.getElementById('nombre').value,
                 especie: document.getElementById('especie').value,
                 raza: document.getElementById('raza').value,
                 foto_url: fotoUrl,
                 notas_medicas: document.getElementById('notas').value,
-                contacto_alternativo: document.getElementById('contacto-alt').value
+                contacto_alternativo: document.getElementById('contacto-alt').value,
+                plan: planEnMemoria,
+                email_dueno: 'cliente_prueba@correo.com', // Datos simulados temporales para el webhook
+                nombre_dueno: 'Cliente Prueba',
+                telefono_dueno: '5511223344'
             };
 
-            // NOTA TÉCNICA: Aquí harás el fetch POST a tu endpoint del backend 
-            // para guardar en la tabla 'mascotas'.
-            console.log("Enviando perfil al servidor...", perfilMascota);
-            alert("¡Perfil guardado de forma exitosa! Tu SmartPet ID está listo.");
+            try {
+                // 3. Hacemos la petición real al backend en Render
+                const response = await fetch('/api/v1/registrar-pre-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosPayload)
+                });
+                
+                const data = await response.json();
+                
+                // 4. Si el servidor generó la sesión con éxito, redirigimos a Stripe
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Error del servidor: No se pudo generar la sesión de pago.');
+                    submitBtn.innerText = "Guardar Perfil y Activar Placa";
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error al conectar con la API:", error);
+                alert("No se pudo conectar con el servidor backend para iniciar el cobro.");
+                submitBtn.innerText = "Guardar Perfil y Activar Placa";
+                submitBtn.disabled = false;
+            }
         });
     </script>
 </body>
