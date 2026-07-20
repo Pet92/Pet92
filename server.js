@@ -17,6 +17,63 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname)); // Sirve index.html y registro.html de forma automática
 
+
+
+// ============================================================
+// NUEVOS ENDPOINTS: SISTEMA DE USUARIOS Y AUTENTICACIÓN
+// ============================================================
+
+// 1. REGISTRO DE NUEVAS CUENTAS DESDE LA MODAL
+app.post('/api/v1/auth/registro', async (req, res) => {
+    const { nombre, email, telefono, password } = req.body;
+    try {
+        // Verificamos si el correo ya existe en el sistema
+        const existeUser = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
+        if (existeUser.rows.length > 0) {
+            return res.status(400).json({ success: false, error: 'El correo electrónico ya se encuentra registrado.' });
+        }
+        // Insertamos el nuevo usuario dueño en la base de datos
+        // NOTA: Para producción real se recomienda usar criptografía como bcrypt en lugar de texto plano
+        const nuevoUser = await pool.query(
+            `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
+             VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, telefono_contacto`,
+            [nombre, email, password, telefono]
+        );
+        const usuario = nuevoUser.rows[0];
+        res.json({
+            success: true,
+            usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto }
+        });
+    } catch (error) {
+        console.error("Error en registro:", error);
+        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
+    }
+});
+// 2. INICIO DE SESIÓN DE CUENTAS EXISTENTES
+app.post('/api/v1/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const queryUser = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+        if (queryUser.rows.length === 0) {
+            return res.status(400).json({ success: false, error: 'Las credenciales ingresadas no coinciden.' });
+        }
+        const usuario = queryUser.rows[0];
+        // Validamos la contraseña
+        if (usuario.password_hash !== password) {
+            return res.status(400).json({ success: false, error: 'Contraseña incorrecta.' });
+        }
+        res.json({
+            success: true,
+            usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto }
+        });
+    } catch (error) {
+        console.error("Error en login:", error);
+        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
+    }
+});
+
+
+
 // ============================================================
 // ¡SINTAXIS BLINDADA! Inicialización limpia de tablas
 // ============================================================
