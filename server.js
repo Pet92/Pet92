@@ -12,13 +12,12 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Middlewares básicos
+// Middlewares estándar
 app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname)); // Sirve index.html, registro.html, dashboard.html y status.html
+app.use(express.static(__dirname)); // Sirve automáticamente los archivos HTML estáticos
 
 // ============================================================
-// INICIALIZACIÓN AUTOMÁTICA DE LA BASE DE DATOS (CON TIPO_PLAN)
+// INICIALIZACIÓN AUTOMÁTICA DE BASE DE DATOS + ALTER TABLE FORZADO
 // ============================================================
 async function inicializarBaseDeDatos() {
     const scriptSQL = `
@@ -42,7 +41,7 @@ async function inicializarBaseDeDatos() {
             contacto_alternativo VARCHAR(20),
             notas_medicas TEXT,
             estado VARCHAR(20) DEFAULT 'Pendiente de Pago',
-            tipo_plan VARCHAR(20) DEFAULT 'basico', -- 'basico' o 'guardian'
+            tipo_plan VARCHAR(20) DEFAULT 'basico',
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
         );
@@ -74,21 +73,31 @@ async function inicializarBaseDeDatos() {
     try {
         console.log('Estructurando tablas en PostgreSQL...');
         await pool.query(scriptSQL);
-        console.log('¡Base de datos SmartPet ID inicializada con éxito!');
+
+        // MODIFICACIÓN DE SEGURIDAD: Fuerza la adición de la columna tipo_plan si la tabla ya existía previa a este cambio
+        await pool.query(`
+            ALTER TABLE mascotas 
+            ADD COLUMN IF NOT EXISTS tipo_plan VARCHAR(20) DEFAULT 'basico';
+        `);
+
+        console.log('¡Base de datos SmartPet ID verificada y actualizada en la nube!');
     } catch (error) {
         console.error('Error crítico al estructurar la base de datos:', error);
     }
 }
 
+// Middleware de JSON (Colocado después de la definición para no interferir con el Webhook de Stripe)
+app.use(express.json());
+
 // ============================================================
-// ENDPOINTS: SISTEMA DE USUARIOS Y AUTENTICACIÓN
+// ENDPOINTS: AUTENTICACIÓN DE USUARIOS
 // ============================================================
 app.post('/api/v1/auth/registro', async (req, res) => {
     const { nombre, email, telefono, password } = req.body;
     try {
         const existeUser = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
         if (existeUser.rows.length > 0) {
-            return res.status(400).json({ success: false, error: 'El correo ya está registrado.' });
+            return res.status(400).json({ success: false, error: 'El correo electrónico ya está registrado.' });
         }
         const nuevoUser = await pool.query(
             `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
@@ -97,6 +106,7 @@ app.post('/api/v1/auth/registro', async (req, res) => {
         );
         res.json({ success: true, usuario: { id: nuevoUser.rows[0].id, nombre: nuevoUser.rows[0].nombre, email: nuevoUser.rows[0].email, telefono: nuevoUser.rows[0].telefono_contacto } });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
     }
 });
@@ -111,12 +121,13 @@ app.post('/api/v1/auth/login', async (req, res) => {
         const usuario = queryUser.rows[0];
         res.json({ success: true, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto } });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
     }
 });
 
 // ============================================================
-// ENDPOINT: REGISTRAR ANTES DE MANDAR A STRIPE (INCLUYE TIPO_PLAN)
+// ENDPOINT: PRE-REGISTRO Y SESIÓN DE CHECKOUT DE STRIPE
 // ============================================================
 app.post('/api/v1/registrar-pre-pago', async (req, res) => {
     const { nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, plan, email_dueno, nombre_dueno, telefono_dueno } = req.body;
@@ -134,7 +145,7 @@ app.post('/api/v1/registrar-pre-pago', async (req, res) => {
             usuarioId = nuevoUser.rows[0].id;
         }
 
-        // Guardamos la mascota inyectando el plan seleccionado
+        // Insertamos la mascota guardando el plan especificado
         const mascotaQuery = await pool.query(
             `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, estado, tipo_plan) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
@@ -158,17 +169,17 @@ app.post('/api/v1/registrar-pre-pago', async (req, res) => {
 
         res.json({ url: session.url });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'No se pudo registrar la información previa.' });
+        console.error("Error en endpoint pre-pago:", error);
+        res.status(500).json({ error: 'No se pudo procesar la solicitud pre-pago.' });
     }
 });
 
 // ============================================================
-// ENDPOINT CONCENTRADOR PARA EL DASHBOARD DEL USUARIO
+// ENDPOINT: CONSULTA DATOS DASHBOARD
 // ============================================================
 app.get('/api/v1/dashboard/datos', async (req, res) => {
     const { usuario_id } = req.query;
-    if(!usuario_id) return res.status(400).json({ success: false, error: 'ID requerido.' });
+    if(!usuario_id) return res.status(400).json({ success: false, error: 'ID de usuario requerido.' });
 
     try {
         const mascotas = await pool.query(
@@ -184,20 +195,23 @@ app.get('/api/v1/dashboard/datos', async (req, res) => {
              WHERE m.usuario_id = $1 ORDER BY h.fecha_escaneo DESC`, [usuario_id]
         );
 
-        const plates = await pool.query(
+        const placas = await pool.query(
             `SELECT p.codigo_qr_unico, p.estado_pedido, m.nombre_mascota 
              FROM placas p
              LEFT JOIN mascotas m ON p.mascota_id = m.id
              WHERE m.usuario_id = $1 OR p.mascota_id IS NULL ORDER BY p.id DESC`, [usuario_id]
         );
 
-        res.json({ success: true, mascotas: mascotas.rows, escaneos: escaneos.rows, placas: plates.rows });
+        res.json({ success: true, mascotas: mascotas.rows, escaneos: escaneos.rows, placas: placas.rows });
     } catch (error) {
+        console.error("Error en Dashboard datos:", error);
         res.status(500).json({ success: false, error: 'Error en base de datos.' });
     }
 });
 
-// WEBHOOK DE CONFIRMACIÓN DE STRIPE
+// ============================================================
+// WEBHOOK STRIPE (RECIBE CONFIRMACIONES DE PAGO EN SEGUNDO PLANO)
+// ============================================================
 app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
@@ -220,16 +234,16 @@ app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), as
                 `INSERT INTO placas (mascota_id, codigo_qr_unico, url_completa, estado_pedido) 
                  VALUES ($1, $2, $3, $4)`, [mascotaId, codigoQR, `https://pet92.onrender.com/rescuer.html?code=${codigoQR}`, 'pagado']
             );
-            console.log(`¡Pago Exitoso! Mascota ${mascotaId} activa. Enviar a: ${direccion}`);
+            console.log(`¡Pago Exitoso! Mascota ID: ${mascotaId} activada. Dirección de envío: ${direccion}`);
         } catch (dbErr) {
-            console.error(dbErr);
+            console.error("Error en Webhook BD:", dbErr);
         }
     }
     res.json({ received: true });
 });
 
-// Encendido global
+// Encendido del Servidor
 app.listen(PORT, async () => {
-    console.log(`Servidor activo en puerto ${PORT}`);
+    console.log(`Servidor SmartPet ID activo en puerto ${PORT}`);
     await inicializarBaseDeDatos();
 });
