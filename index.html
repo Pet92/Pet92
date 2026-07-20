@@ -1,390 +1,355 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet92 - Placas QR y Cuidado Inteligente para tus Mascotas</title>
-  
-  <style>
-    :root {
-      --primary: #4F46E5;
-      --primary-hover: #4338CA;
-      --secondary: #10B981;
-      --dark: #1F2937;
-      --light: #F9FAFB;
-      --gray: #6B7280;
-      --border: #E5E7EB;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet92 - Tu mascota siempre segura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ==========================================
+           1. ESTILOS GLOBALES
+           ========================================== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; line-height: 1.6; overflow-x: hidden; }
+        .badge { display: inline-block; background-color: #D1E8E2; color: #2E4D68; font-weight: 700; font-size: 14px; padding: 6px 16px; border-radius: 20px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        /* ==========================================
+           2. MENÚ DE NAVEGACIÓN (NAVBAR)
+           ========================================== */
+        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+        .logo { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; color: #2E4D68; text-decoration: none; }
+        .logo span { color: #E7717D; }
+        .nav-links { display: flex; align-items: center; gap: 24px; }
+        
+        /* Estilos sobrios e integrados para todos los elementos del Navbar */
+        .nav-links a, .nav-links button { 
+            color: #2E4D68; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 16px; 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-family: 'Lato', sans-serif;
+            transition: color 0.2s ease;
+            padding: 0;
+        }
+        .nav-links a:hover, .nav-links button:hover {
+            color: #E7717D;
+        }
 
-    body {
-      background-color: var(--light);
-      color: var(--dark);
-      line-height: 1.6;
-    }
+        /* ==========================================
+           3. SECCIÓN HERO PRINCIPAL
+           ========================================== */
+        .hero-section { max-width: 1200px; margin: 40px auto 80px auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+        .hero-text-content { flex: 1; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 42px; color: #2E4D68; line-height: 1.2; margin-bottom: 20px; }
+        h1 span { color: #E7717D; }
+        .hero-description { font-size: 18px; margin-bottom: 35px; color: #64748B; }
+        .hero-cta-btn { display: inline-block; background-color: #E7717D; color: white; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; text-decoration: none; padding: 16px 36px; border-radius: 8px; box-shadow: 0 4px 14px rgba(231, 113, 125, 0.4); transition: transform 0.2s ease, background-color 0.2s ease; }
+        .hero-cta-btn:hover { background-color: #d65d69; transform: translateY(-2px); }
+        .shipping-notice { margin-top: 15px; font-size: 14px; color: #94A3B8; }
+        
+        .hero-image-wrapper { flex: 1; position: relative; text-align: center; }
+        .main-hero-image { width: 100%; max-width: 480px; height: 380px; border-radius: 24px; box-shadow: 0 20px 40px rgba(46, 77, 104, 0.15); object-fit: cover; }
+        
+        /* Tarjeta flotante con diseño y estilo restaurado */
+        .floating-card { position: absolute; bottom: 20px; left: 10px; background-color: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left; border-left: 5px solid #D1E8E2; max-width: 280px; }
+        .floating-card h4 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .floating-card p { font-size: 13px; color: #64748B; margin: 0; }
 
-    /* Navbar */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: #ffffff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+        /* ==========================================
+           4. SECCIÓN TABLA DE PRECIOS
+           ========================================== */
+        .pricing-section { max-width: 1200px; margin: 80px auto; padding: 0 24px; }
+        .pricing-header { text-align: center; margin-bottom: 50px; }
+        .pricing-header h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 36px; margin: 10px 0; }
+        .pricing-container { display: flex; gap: 30px; justify-content: center; }
+        .price-card { flex: 1; max-width: 500px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05); border: 2px solid #E2E8F0; position: relative; }
+        .price-card.featured { border-color: #E7717D; box-shadow: 0 15px 35px rgba(231, 113, 125, 0.15); }
+        .featured-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background-color: #E7717D; color: white; padding: 4px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+        .price-card h3 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 24px; margin-bottom: 15px; }
+        .price-amount { font-size: 48px; font-weight: 700; color: #2E4D68; line-height: 1; margin-bottom: 10px; }
+        .price-amount span { font-size: 20px; font-weight: 400; }
+        .price-amount small { font-size: 16px; color: #64748B; font-weight: 400; display: block; margin-top: 5px; }
+        .plan-subtitle { color: #64748B; font-size: 15px; margin-bottom: 30px; }
+        .plan-features { list-style: none; margin-bottom: 40px; }
+        .plan-features li { margin-bottom: 12px; font-size: 16px; color: #475569; }
+        .plan-features li i.fa-check { color: #25D366; margin-right: 10px; }
+        .plan-features li i.fa-xmark { color: #94A3B8; margin-right: 13px; margin-left: 3px; }
+        .plan-features li.disabled { color: #94A3B8; text-decoration: line-through; }
+        
+        .btn-checkout { display: block; width: 100%; text-align: center; padding: 16px; border-radius: 10px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; cursor: pointer; transition: background 0.2s; }
+        .plan-basic-btn { background-color: #F1F5F9; color: #2E4D68; border: 1px solid #CBD5E1; }
+        .plan-basic-btn:hover { background-color: #E2E8F0; }
+        .plan-featured-btn { background-color: #E7717D; color: white; }
+        .plan-featured-btn:hover { background-color: #d65d69; }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+        /* ==========================================
+           5. VENTANA MODAL (LOGIN / REGISTRO)
+           ========================================== */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46, 77, 104, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 450px; border-radius: 20px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); position: relative; animation: fadeIn 0.3s ease; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 20px; color: #94A3B8; cursor: pointer; border: none; background: none; }
+        
+        .modal-tabs { display: flex; border-bottom: 2px solid #E2E8F0; margin-bottom: 25px; }
+        .tab-btn { flex: 1; padding: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; text-align: center; background: none; border: none; cursor: pointer; color: #94A3B8; }
+        .tab-btn.active { color: #E7717D; border-bottom: 3px solid #E7717D; margin-bottom: -2px; }
+        
+        .modal-form { display: none; }
+        .modal-form.active { display: block; }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 6px; font-size: 14px; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px; outline: none; }
+        .btn-form-submit { width: 100%; background: #2E4D68; color: white; border: none; padding: 14px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; }
 
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .nav-links a {
-      text-decoration: none;
-      color: var(--dark);
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary);
-    }
-
-    /* Botones */
-    .btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background-color: var(--primary);
-      color: white !important;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .btn-outline {
-      border: 2px solid var(--primary);
-      color: var(--primary) !important;
-      background: transparent;
-    }
-
-    .btn-outline:hover {
-      background-color: var(--primary);
-      color: white !important;
-    }
-
-    .btn-danger {
-      background-color: #EF4444;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background-color: #DC2626;
-    }
-
-    /* Hero Section */
-    .hero {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      gap: 2rem;
-    }
-
-    .hero-content {
-      flex: 1;
-    }
-
-    .hero-content h1 {
-      font-size: 2.8rem;
-      margin-bottom: 1rem;
-      color: var(--dark);
-      line-height: 1.2;
-    }
-
-    .hero-content p {
-      font-size: 1.1rem;
-      color: var(--gray);
-      margin-bottom: 2rem;
-    }
-
-    .hero-image {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-    }
-
-    .hero-image img {
-      width: 100%;
-      max-width: 450px;
-      height: auto;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      object-fit: cover;
-    }
-
-    /* Sección de Planes */
-    .plans-section {
-      padding: 4rem 2rem;
-      background-color: #ffffff;
-      text-align: center;
-    }
-
-    .plans-section h2 {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .plans-subtitle {
-      color: var(--gray);
-      margin-bottom: 3rem;
-    }
-
-    .plans-container {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .plan-card {
-      background: var(--light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem 2rem;
-      width: 320px;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .plan-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 20px rgba(0,0,0,0.08);
-    }
-
-    .plan-card.featured {
-      border: 2px solid var(--primary);
-      background: #ffffff;
-      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.12);
-    }
-
-    .badge {
-      position: absolute;
-      top: -12px;
-      right: 20px;
-      background-color: var(--primary);
-      color: white;
-      padding: 0.2rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .plan-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .plan-price {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-    }
-
-    .plan-price span {
-      font-size: 1rem;
-      color: var(--gray);
-      font-weight: normal;
-    }
-
-    .plan-features {
-      list-style: none;
-      margin-bottom: 2rem;
-    }
-
-    .plan-features li {
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-    }
-
-    .plan-features li::before {
-      content: "✓";
-      color: var(--secondary);
-      font-weight: bold;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background-color: var(--dark);
-      color: white;
-      margin-top: 2rem;
-    }
-
-    @media (max-width: 768px) {
-      .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem 1rem;
-      }
-
-      .hero-content h1 {
-        font-size: 2rem;
-      }
-
-      .plans-container {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-  </style>
+        /* Responsividad Móvil */
+        @media screen and (max-width: 768px) {
+            .hero-section { flex-direction: column; text-align: center; }
+            .pricing-container { flex-direction: column; }
+            .floating-card { left: 50%; transform: translateX(-50%); bottom: -20px; }
+        }
+    </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <a href="index.html" class="logo">🐾 Pet92</a>
+    <header class="navbar">
+        <a href="#" class="logo">Pet<span>92</span></a>
+        <nav class="nav-links">
+            <a href="dashboard.html" id="btn-nav-dashboard" style="display: none;">🐾 Mi Panel</a>
+            <button id="btn-nav-auth" onclick="abrirModal('login')">Iniciar Sesión</button>
+            <button id="btn-nav-logout" style="display: none;" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </nav>
+    </header>
 
-    <div class="nav-links">
-      <a href="#planes">Planes</a>
-      
-      <a href="login.html" id="nav-login-btn" class="btn btn-outline">Iniciar Sesión</a>
-      <a href="register.html" id="nav-register-btn" class="btn btn-primary">Registrarse</a>
-
-      <a href="dashboard.html" id="nav-dashboard-btn" class="btn btn-primary" style="display: none;">🐾 Mi Panel</a>
-      <button onclick="cerrarSesion()" id="nav-logout-btn" class="btn btn-danger" style="display: none;">Cerrar Sesión</button>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <div class="hero-content">
-      <h1>La seguridad de tu mascota a un escaneo de distancia</h1>
-      <p>Con Pet92 mantén a tus mascotas protegidas con placas QR inteligentes, perfil médico digital y notificación inmediata en caso de extravío.</p>
-      <a href="#planes" class="btn btn-primary" style="padding: 0.8rem 1.8rem; font-size: 1.1rem;">Ver Planes y Placas</a>
-    </div>
-    <div class="hero-image">
-      <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80" alt="Mascota con placa Pet92">
-    </div>
-  </header>
-
-  <section id="planes" class="plans-section">
-    <h2>Elige el plan ideal para tu mascota</h2>
-    <p class="plans-subtitle">Protección inteligente diseñada a la medida de tus necesidades</p>
-
-    <div class="plans-container">
-      
-      <div class="plan-card">
-        <div>
-          <div class="plan-title">Plan Básico</div>
-          <div class="plan-price">$0 <span>/ de por vida</span></div>
-          <ul class="plan-features">
-            <li>Perfil digital básico de mascota</li>
-            <li>Código QR funcional</li>
-            <li>Contacto directo por llamada o WhatsApp</li>
-            <li>Actualización de datos ilimitada</li>
-          </ul>
+    <section class="hero-section">
+        <div class="hero-text-content">
+            <span class="badge"><i class="fa-solid fa-shield-dog"></i> Lanzamiento Oficial</span>
+            <h1>La placa inteligente que trae a tu mejor amigo <span>de vuelta a casa</span></h1>
+            <p class="hero-description">
+                Si tu mascota se pierde, cualquier persona puede escanear su placa con su celular. Recibirás una alerta instantánea con su ubicación GPS y el rescatista podrá contactarte en un clic.
+            </p>
+            <a href="#precios" class="hero-cta-btn">Ver Planes de Protección <i class="fa-solid fa-arrow-down"></i></a>
+            <p class="shipping-notice"><i class="fa-solid fa-truck-fast"></i> Envíos rápidos a todo México y USA.</p>
         </div>
-        <a href="register.html" class="btn btn-outline" style="text-align: center;">Comenzar Gratis</a>
-      </div>
 
-      <div class="plan-card featured">
-        <div class="badge">Más Popular</div>
-        <div>
-          <div class="plan-title">Plan Guardián</div>
-          <div class="plan-price">$199 <span>/ único pago (Incluye Placa)</span></div>
-          <ul class="plan-features">
-            <li>Placa física QR personalizada de alta durabilidad</li>
-            <li>Perfil médico completo (Alergias, vacunas)</li>
-            <li>Ubicación GPS al escanear la placa</li>
-            <li>Notificaciones inmediatas a tu correo</li>
-            <li>Galería de fotos de tu mascota</li>
-          </ul>
+        <div class="hero-image-wrapper">
+            <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80" alt="Perro protegido con placa Pet92" class="main-hero-image">
+            <div class="floating-card">
+                <h4><i class="fa-solid fa-location-dot" style="color: #E7717D;"></i> ¡Alerta de Escaneo!</h4>
+                <p>Placa de 'Max' escaneada. Ubicación compartida con el dueño.</p>
+            </div>
         </div>
-        <a href="register.html" class="btn btn-primary" style="text-align: center;">Obtener Placa</a>
-      </div>
+    </section>
 
+    <section id="precios" class="pricing-section">
+        <div class="pricing-header">
+            <span class="badge"><i class="fa-solid fa-tags"></i> Cobertura Mex / USA</span>
+            <h2>Elige la protección ideal para tu compañero</h2>
+            <p>Precios transparentes y accesibles. Protege a tu peludo hoy mismo.</p>
+        </div>
+
+        <div class="pricing-container">
+            <div class="price-card">
+                <h3>Plan Esencial</h3>
+                <div class="price-amount">$299 <span>MXN</span> <small>/ Pago Único</small></div>
+                <p class="plan-subtitle">Ideal para protección básica en la calle.</p>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> Placa física grabada en láser</li>
+                    <li><i class="fa-solid fa-check"></i> Envío a domicilio incluido</li>
+                    <li><i class="fa-solid fa-check"></i> Perfil digital de por vida</li>
+                    <li><i class="fa-solid fa-check"></i> Botones de llamada directa al dueño</li>
+                    <li class="disabled"><i class="fa-solid fa-xmark"></i> Alertas de ubicación GPS</li>
+                    <li class="disabled"><i class="fa-solid fa-xmark"></i> Notificaciones por WhatsApp</li>
+                </ul>
+                <button class="btn-checkout plan-basic-btn" data-plan="basico">Comprar Placa <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+
+            <div class="price-card featured">
+                <div class="featured-badge">Más Recomendado</div>
+                <h3>Plan Guardián</h3>
+                <div class="price-amount">$39 <span>MXN</span> <small>/ mes</small></div>
+                <p class="plan-subtitle">Protección avanzada con alertas en tiempo real.</p>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> Todo lo del Plan Esencial</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Alertas GPS instantáneas</strong> al mapa</li>
+                    <li><i class="fa-solid fa-check"></i> Notificación automática por <strong>WhatsApp y Email</strong></li>
+                    <li><i class="fa-solid fa-check"></i> Historial clínico digital de vacunas</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Generador de cartel "Se Busca" en 1 clic</strong></li>
+                </ul>
+                <button class="btn-checkout plan-featured-btn" data-plan="guardian">Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="tab-login" onclick="cambiarTab('login')">Ingresar</button>
+                <button class="tab-btn" id="tab-registro" onclick="cambiarTab('registro')">Registrarse</button>
+            </div>
+
+            <form id="form-login" class="modal-form active" onsubmit="procesarAuth(event, 'login')">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-email" required placeholder="tu@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-form-submit">Entrar de Forma Segura</button>
+            </form>
+
+            <form id="form-registro" class="modal-form" onsubmit="procesarAuth(event, 'registro')">
+                <div class="form-group">
+                    <label>Tu Nombre Completo</label>
+                    <input type="text" id="reg-nombre" required placeholder="Ej. Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="reg-email" required placeholder="tu@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono Celular (Alertas)</label>
+                    <input type="text" id="reg-telefono" required placeholder="Ej. +52 81 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn-form-submit">Crear Cuenta y Continuar</button>
+            </form>
+        </div>
     </div>
-  </section>
 
-  <footer>
-    <p>&copy; 2026 Pet92 - Cuidado y Seguridad Canina y Felina. Todos los derechos reservados.</p>
-  </footer>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            verificarSesion();
+        });
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Verificar si hay sesión activa en localStorage
-      const usuarioId = localStorage.getItem("usuario_id");
-      const token = localStorage.getItem("token");
+        function verificarSesion() {
+            const usuarioLogueado = localStorage.getItem('usuario_id');
+            const btnDashboard = document.getElementById('btn-nav-dashboard');
+            const btnAuth = document.getElementById('btn-nav-auth');
+            const btnLogout = document.getElementById('btn-nav-logout');
 
-      // Referencias a los botones de navegación
-      const btnLogin = document.getElementById("nav-login-btn");
-      const btnRegister = document.getElementById("nav-register-btn");
-      const btnDashboard = document.getElementById("nav-dashboard-btn");
-      const btnLogout = document.getElementById("nav-logout-btn");
+            if (usuarioLogueado) {
+                btnAuth.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+                btnDashboard.style.display = 'inline-block';
+            } else {
+                btnAuth.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+                btnDashboard.style.display = 'none';
+            }
+        }
 
-      if (usuarioId || token) {
-        // Usuario SÍ ha iniciado sesión
-        if (btnLogin) btnLogin.style.display = "none";
-        if (btnRegister) btnRegister.style.display = "none";
-        if (btnDashboard) btnDashboard.style.display = "inline-block";
-        if (btnLogout) btnLogout.style.display = "inline-block";
-      } else {
-        // Usuario NO ha iniciado sesión
-        if (btnLogin) btnLogin.style.display = "inline-block";
-        if (btnRegister) btnRegister.style.display = "inline-block";
-        if (btnDashboard) btnDashboard.style.display = "none";
-        if (btnLogout) btnLogout.style.display = "none";
-      }
-    });
+        function abrirModal(tipo) {
+            document.getElementById('auth-modal').style.display = 'flex';
+            cambiarTab(tipo);
+        }
 
-    // Función para cerrar la sesión
-    function cerrarSesion() {
-      localStorage.removeItem("usuario_id");
-      localStorage.removeItem("token");
-      window.location.reload(); // Recarga la página para refrescar el menú
-    }
-  </script>
+        function cerrarModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
 
+        function cambiarTab(tipo) {
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegistro = document.getElementById('tab-registro');
+            const formLogin = document.getElementById('form-login');
+            const formRegistro = document.getElementById('form-registro');
+
+            if (tipo === 'login') {
+                tabLogin.classList.add('active');
+                tabRegistro.classList.remove('active');
+                formLogin.classList.add('active');
+                formRegistro.classList.remove('active');
+            } else {
+                tabRegistro.classList.add('active');
+                tabLogin.classList.remove('active');
+                formRegistro.classList.add('active');
+                formLogin.classList.remove('active');
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            alert("Has cerrado sesión.");
+            verificarSesion();
+        }
+
+        // Selección de Planes y Redirección Corregida a registro.html
+        document.querySelectorAll('.btn-checkout').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const plan = e.target.closest('.btn-checkout').getAttribute('data-plan');
+                localStorage.setItem('plan_seleccionado', plan);
+                
+                if (localStorage.getItem('usuario_id')) {
+                    window.location.href = 'registro.html';
+                } else {
+                    abrirModal('registro');
+                }
+            });
+        });
+
+        async function procesarAuth(e, tipo) {
+            e.preventDefault();
+            let url = (tipo === 'login') ? '/api/v1/auth/login' : '/api/v1/auth/registro';
+            let payload = {};
+
+            if (tipo === 'login') {
+                payload = {
+                    email: document.getElementById('login-email').value,
+                    password: document.getElementById('login-password').value
+                };
+            } else {
+                payload = {
+                    nombre: document.getElementById('reg-nombre').value,
+                    email: document.getElementById('reg-email').value,
+                    telefono: document.getElementById('reg-telefono').value,
+                    password: document.getElementById('reg-password').value
+                };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('usuario_id', data.usuario.id);
+                    localStorage.setItem('usuario_email', data.usuario.email);
+                    localStorage.setItem('usuario_nombre', data.usuario.nombre);
+                    localStorage.setItem('usuario_telefono', data.usuario.telefono);
+
+                    cerrarModal();
+                    verificarSesion();
+
+                    if(localStorage.getItem('plan_seleccionado')) {
+                        window.location.href = 'registro.html';
+                    }
+                } else {
+                    alert(data.error || 'Ocurrió un error.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('No se pudo conectar con el sistema de autenticación.');
+            }
+        }
+    </script>
 </body>
 </html>
