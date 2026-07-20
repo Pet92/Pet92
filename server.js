@@ -6,19 +6,16 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Conexión a la Base de Datos PostgreSQL de Render
+// Conexión a PostgreSQL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// Middlewares estándar
 app.use(cors());
-app.use(express.static(__dirname)); // Sirve automáticamente los archivos HTML estáticos
+app.use(express.static(__dirname));
 
-// ============================================================
-// INICIALIZACIÓN AUTOMÁTICA DE BASE DE DATOS + ALTER TABLE FORZADO
-// ============================================================
+// Inicialización de Tablas
 async function inicializarBaseDeDatos() {
     const scriptSQL = `
         CREATE TABLE IF NOT EXISTS usuarios (
@@ -71,27 +68,17 @@ async function inicializarBaseDeDatos() {
     `;
 
     try {
-        console.log('Estructurando tablas en PostgreSQL...');
         await pool.query(scriptSQL);
-
-        // MODIFICACIÓN DE SEGURIDAD: Fuerza la adición de la columna tipo_plan si la tabla ya existía previa a este cambio
-        await pool.query(`
-            ALTER TABLE mascotas 
-            ADD COLUMN IF NOT EXISTS tipo_plan VARCHAR(20) DEFAULT 'basico';
-        `);
-
-        console.log('¡Base de datos SmartPet ID verificada y actualizada en la nube!');
+        await pool.query(`ALTER TABLE mascotas ADD COLUMN IF NOT EXISTS tipo_plan VARCHAR(20) DEFAULT 'basico';`);
+        console.log('¡Base de datos verificada y lista!');
     } catch (error) {
-        console.error('Error crítico al estructurar la base de datos:', error);
+        console.error('Error al estructurar base de datos:', error);
     }
 }
 
-// Middleware de JSON (Colocado después de la definición para no interferir con el Webhook de Stripe)
 app.use(express.json());
 
-// ============================================================
-// ENDPOINTS: AUTENTICACIÓN DE USUARIOS
-// ============================================================
+// AUTENTICACIÓN
 app.post('/api/v1/auth/registro', async (req, res) => {
     const { nombre, email, telefono, password } = req.body;
     try {
@@ -106,7 +93,6 @@ app.post('/api/v1/auth/registro', async (req, res) => {
         );
         res.json({ success: true, usuario: { id: nuevoUser.rows[0].id, nombre: nuevoUser.rows[0].nombre, email: nuevoUser.rows[0].email, telefono: nuevoUser.rows[0].telefono_contacto } });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
     }
 });
@@ -121,35 +107,75 @@ app.post('/api/v1/auth/login', async (req, res) => {
         const usuario = queryUser.rows[0];
         res.json({ success: true, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto } });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
     }
 });
 
-// ============================================================
-// ENDPOINT: PRE-REGISTRO Y SESIÓN DE CHECKOUT DE STRIPE
-// ============================================================
-app.post('/api/v1/registrar-pre-pago', async (req, res) => {
-    const { nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, plan, email_dueno, nombre_dueno, telefono_dueno } = req.body;
-
+// EDITAR PERFIL DE USUARIO
+app.put('/api/v1/usuarios/editar', async (req, res) => {
+    const { usuario_id, nombre, telefono, password } = req.body;
     try {
-        let userQuery = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email_dueno]);
-        let usuarioId = userQuery.rows.length > 0 ? userQuery.rows[0].id : null;
-
-        if (!usuarioId) {
-            const nuevoUser = await pool.query(
-                `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
-                 VALUES ($1, $2, $3, $4) RETURNING id`,
-                [nombre_dueno || 'Cliente Temporal', email_dueno, 'temp_hash_123', telefono_dueno || '0000000']
-            );
-            usuarioId = nuevoUser.rows[0].id;
+        let query = `UPDATE usuarios SET nombre = $1, telefono_contacto = $2`;
+        let values = [nombre, telefono, usuario_id];
+        
+        if (password && password.trim() !== '') {
+            query += `, password_hash = $4 WHERE id = $3`;
+            values = [nombre, telefono, usuario_id, password];
+        } else {
+            query += ` WHERE id = $3`;
         }
 
-        // Insertamos la mascota guardando el plan especificado
+        await pool.query(query, values);
+        res.json({ success: true, message: 'Perfil actualizado correctamente.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'No se pudo actualizar el perfil.' });
+    }
+});
+
+// EDITAR PERFIL DE MASCOTA
+app.put('/api/v1/mascotas/editar', async (req, res) => {
+    const { mascota_id, usuario_id, nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo } = req.body;
+    try {
+        await pool.query(
+            `UPDATE mascotas 
+             SET nombre_mascota = $1, especie = $2, raza = $3, foto_url = $4, notas_medicas = $5, contacto_alternativo = $6
+             WHERE id = $7 AND usuario_id = $8`,
+            [nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, mascota_id, usuario_id]
+        );
+        res.json({ success: true, message: 'Datos de la mascota actualizados.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error al actualizar mascota.' });
+    }
+});
+
+// REGISTRO PRE-PAGO (ENLAZADO A USUARIO REAL)
+app.post('/api/v1/registrar-pre-pago', async (req, res) => {
+    const { usuario_id, nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, plan, email_dueno, nombre_dueno, telefono_dueno } = req.body;
+
+    try {
+        let usuarioIdFinal = usuario_id;
+
+        // Si no viene usuario_id explícito, buscamos o creamos por correo
+        if (!usuarioIdFinal) {
+            let userQuery = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email_dueno]);
+            if (userQuery.rows.length > 0) {
+                usuarioIdFinal = userQuery.rows[0].id;
+            } else {
+                const nuevoUser = await pool.query(
+                    `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
+                     VALUES ($1, $2, $3, $4) RETURNING id`,
+                    [nombre_dueno || 'Cliente', email_dueno, 'temp_hash_123', telefono_dueno || '0000000']
+                );
+                usuarioIdFinal = nuevoUser.rows[0].id;
+            }
+        }
+
         const mascotaQuery = await pool.query(
             `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, estado, tipo_plan) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-            [usuarioId, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, 'Pendiente de Pago', plan]
+            [usuarioIdFinal, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, 'Pendiente de Pago', plan]
         );
         const mascotaId = mascotaQuery.rows[0].id;
 
@@ -169,21 +195,21 @@ app.post('/api/v1/registrar-pre-pago', async (req, res) => {
 
         res.json({ url: session.url });
     } catch (error) {
-        console.error("Error en endpoint pre-pago:", error);
-        res.status(500).json({ error: 'No se pudo procesar la solicitud pre-pago.' });
+        console.error("Error pre-pago:", error);
+        res.status(500).json({ error: 'Error al procesar la sesión.' });
     }
 });
 
-// ============================================================
-// ENDPOINT: CONSULTA DATOS DASHBOARD
-// ============================================================
+// DATOS DEL DASHBOARD (INCLUYE DATOS DEL USUARIO)
 app.get('/api/v1/dashboard/datos', async (req, res) => {
     const { usuario_id } = req.query;
-    if(!usuario_id) return res.status(400).json({ success: false, error: 'ID de usuario requerido.' });
+    if(!usuario_id) return res.status(400).json({ success: false, error: 'ID requerido.' });
 
     try {
+        const usuario = await pool.query(`SELECT id, nombre, email, telefono_contacto FROM usuarios WHERE id = $1`, [usuario_id]);
+
         const mascotas = await pool.query(
-            `SELECT id, nombre_mascota, especie, raza, foto_url, estado, tipo_plan 
+            `SELECT id, nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, estado, tipo_plan 
              FROM mascotas WHERE usuario_id = $1 ORDER BY id DESC`, [usuario_id]
         );
 
@@ -202,16 +228,20 @@ app.get('/api/v1/dashboard/datos', async (req, res) => {
              WHERE m.usuario_id = $1 OR p.mascota_id IS NULL ORDER BY p.id DESC`, [usuario_id]
         );
 
-        res.json({ success: true, mascotas: mascotas.rows, escaneos: escaneos.rows, placas: placas.rows });
+        res.json({ 
+            success: true, 
+            usuario: usuario.rows[0] || null, 
+            mascotas: mascotas.rows, 
+            escaneos: escaneos.rows, 
+            placas: placas.rows 
+        });
     } catch (error) {
-        console.error("Error en Dashboard datos:", error);
+        console.error(error);
         res.status(500).json({ success: false, error: 'Error en base de datos.' });
     }
 });
 
-// ============================================================
-// WEBHOOK STRIPE (RECIBE CONFIRMACIONES DE PAGO EN SEGUNDO PLANO)
-// ============================================================
+// WEBHOOK STRIPE
 app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
@@ -234,16 +264,15 @@ app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), as
                 `INSERT INTO placas (mascota_id, codigo_qr_unico, url_completa, estado_pedido) 
                  VALUES ($1, $2, $3, $4)`, [mascotaId, codigoQR, `https://pet92.onrender.com/rescuer.html?code=${codigoQR}`, 'pagado']
             );
-            console.log(`¡Pago Exitoso! Mascota ID: ${mascotaId} activada. Dirección de envío: ${direccion}`);
+            console.log(`¡Pago completado! Mascota ${mascotaId} activa. Dirección: ${direccion}`);
         } catch (dbErr) {
-            console.error("Error en Webhook BD:", dbErr);
+            console.error(dbErr);
         }
     }
     res.json({ received: true });
 });
 
-// Encendido del Servidor
 app.listen(PORT, async () => {
-    console.log(`Servidor SmartPet ID activo en puerto ${PORT}`);
+    console.log(`Servidor activo en puerto ${PORT}`);
     await inicializarBaseDeDatos();
 });

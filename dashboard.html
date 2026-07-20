@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
     
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,7 +23,7 @@
         .welcome-box { margin-bottom: 30px; text-align: left; }
         .welcome-box h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 28px; }
         
-        .tabs-menu { display: flex; gap: 15px; border-bottom: 2px solid #E2E8F0; margin-bottom: 30px; }
+        .tabs-menu { display: flex; gap: 15px; border-bottom: 2px solid #E2E8F0; margin-bottom: 30px; flex-wrap: wrap; }
         .tab-link { padding: 14px 24px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; background: none; cursor: pointer; color: #94A3B8; border-bottom: 3px solid transparent; }
         .tab-link.active { color: #E7717D; border-bottom-color: #E7717D; }
 
@@ -34,34 +35,43 @@
         .mascota-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid #D1E8E2; }
         .mascota-card h4 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 18px; }
         .mascota-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; margin-top: 5px; background: #D1E8E2; color: #2E4D68; }
-        .btn-edit-pet { display: block; width: 100%; margin-top: 15px; padding: 10px; background: #F1F5F9; border: none; border-radius: 6px; font-weight: 700; color: #2E4D68; text-decoration: none; font-size: 14px; text-align: center; }
+        .btn-edit-pet { display: block; width: 100%; margin-top: 15px; padding: 10px; background: #2E4D68; border: none; border-radius: 6px; font-weight: 700; color: white; cursor: pointer; font-size: 14px; text-align: center; }
+
+        /* Estilos de Formulario */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px; }
+        .btn-save { background: #E7717D; color: white; border: none; padding: 14px 28px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; }
 
         .alert-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #F1F5F9; text-align: left; }
-        .alert-info h5 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 15px; }
-        .alert-info p { font-size: 13px; color: #94A3B8; }
         .btn-mapa { background: #E7717D; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; }
-
         .empty-state { text-align: center; padding: 50px 20px; color: #94A3B8; }
         .empty-state i { font-size: 50px; margin-bottom: 15px; display: block; }
+
+        /* Modal Edición Mascota */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46,77,104,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 30px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #94A3B8; }
     </style>
 </head>
 <body>
 
     <header class="navbar">
         <a href="index.html" class="logo">SmartPet<span>ID</span></a>
-        <a href="index.html" class="btn-back-home"><i class="fa-solid fa-house"></i> Volver a la Web</a>
+        <a href="index.html" class="btn-back-home"><i class="fa-solid fa-house"></i> Volver a Inicio</a>
     </header>
 
     <main class="dashboard-container">
         <div class="welcome-box">
             <h2>¡Hola, <span id="user-name">Dueño</span>!</h2>
-            <p>Administra las placas y perfiles de protección de tus mascotas.</p>
+            <p>Administra tu información personal y los perfiles de tus mascotas.</p>
         </div>
 
         <div class="tabs-menu">
             <button class="tab-link active" onclick="switchTab(event, 'panel-mascotas')"><i class="fa-solid fa-dog"></i> Mis Mascotas</button>
             <button class="tab-link" onclick="switchTab(event, 'panel-alertas')"><i class="fa-solid fa-location-crosshairs"></i> Historial de Escaneos</button>
             <button class="tab-link" onclick="switchTab(event, 'panel-pedidos')"><i class="fa-solid fa-box-open"></i> Estatus de Envío</button>
+            <button class="tab-link" onclick="switchTab(event, 'panel-usuario')"><i class="fa-solid fa-user-gear"></i> Mi Perfil</button>
         </div>
 
         <div id="panel-mascotas" class="tab-content active">
@@ -75,17 +85,81 @@
         <div id="panel-pedidos" class="tab-content">
             <div id="container-pedidos"></div>
         </div>
+
+        <div id="panel-usuario" class="tab-content">
+            <h3 style="font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 20px;">Editar Mis Datos Personales</h3>
+            <form id="form-edit-user" onsubmit="guardarPerfilUsuario(event)">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="user-edit-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico (No modificable)</label>
+                    <input type="email" id="user-edit-email" disabled style="background:#F8FAFC;">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono Celular (Para alertas)</label>
+                    <input type="text" id="user-edit-telefono" required>
+                </div>
+                <div class="form-group">
+                    <label>Nueva Contraseña (Dejar en blanco para mantener la actual)</label>
+                    <input type="password" id="user-edit-password" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-save">Guardar Cambios de Perfil</button>
+            </form>
+        </div>
     </main>
 
-    <script>
-        if (!localStorage.getItem('usuario_id')) {
-            window.location.href = 'index.html';
-        }
+    <div class="modal-overlay" id="modal-edit-pet">
+        <div class="modal-box">
+            <button class="close-modal" onclick="cerrarModalMascota()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 15px;">Editar Perfil de Mascota</h3>
+            
+            <form id="form-edit-pet" onsubmit="guardarMascota(event)">
+                <input type="hidden" id="edit-pet-id">
+                <div class="form-group">
+                    <label>Nombre de la Mascota</label>
+                    <input type="text" id="edit-pet-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Especie</label>
+                    <select id="edit-pet-especie" required>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Raza</label>
+                    <input type="text" id="edit-pet-raza">
+                </div>
+                <div class="form-group">
+                    <label>Foto de la Mascota</label>
+                    <button type="button" onclick="cambiarFotoMascota()" style="background:#D1E8E2; border:none; padding:8px 16px; border-radius:6px; font-weight:700; cursor:pointer;">
+                        <i class="fa-solid fa-camera"></i> Cambiar Foto
+                    </button>
+                    <br>
+                    <img id="edit-pet-preview" src="" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-top:10px;">
+                    <input type="hidden" id="edit-pet-fotourl">
+                </div>
+                <div class="form-group">
+                    <label>Notas Médicas / Alergias</label>
+                    <textarea id="edit-pet-notas" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Contacto Alternativo</label>
+                    <input type="text" id="edit-pet-contactoalt">
+                </div>
+                <button type="submit" class="btn-save" style="width:100%;">Actualizar Mascota</button>
+            </form>
+        </div>
+    </div>
 
-        document.getElementById('user-name').innerText = localStorage.getItem('usuario_nombre');
-        
-        // Almacenamiento global de las mascotas para verificar suscripción en tiempo real
-        let mascotasUsuario = []; 
+    <script>
+        const userId = localStorage.getItem('usuario_id');
+        if (!userId) { window.location.href = 'index.html'; }
+
+        let mascotasUsuario = [];
         let registrosEscaneos = [];
 
         function switchTab(e, tabId) {
@@ -96,33 +170,26 @@
             const contenidoTab = document.getElementById(tabId);
             contenidoTab.classList.add('active');
 
-            // CONDICIÓN CRÍTICA DE PLANES (PAYWALL)
             if (tabId === 'panel-alertas') {
-                // Evaluamos si el usuario posee contratado el plan guardian en al menos una mascota
                 const tienePlanGuardian = mascotasUsuario.some(pet => pet.tipo_plan === 'guardian');
-                
                 if (!tienePlanGuardian) {
                     contenidoTab.innerHTML = `
                         <div class="empty-state">
                             <i class="fa-solid fa-lock" style="color: #E7717D; font-size: 54px;"></i>
                             <h3 style="font-family: 'Poppins', sans-serif; color: #2E4D68; margin-top: 15px;">Función Exclusiva del Plan Guardián</h3>
                             <p style="margin: 15px auto 25px auto; max-width: 450px;">
-                                El Plan Esencial únicamente incluye tu perfil digital básico. Para acceder a las alertas GPS en tiempo real con mapas interactivos de escaneo, actualiza tu cuenta.
+                                El Plan Esencial incluye únicamente el perfil digital. Para alertas GPS e historial de escaneos, actualiza tu plan.
                             </p>
-                            <a href="index.html#precios" class="btn-mapa">
-                                <i class="fa-solid fa-rocket"></i> Mejorar a Plan Guardián ($39/mes)
-                            </a>
+                            <a href="index.html#precios" class="btn-mapa"><i class="fa-solid fa-rocket"></i> Mejorar a Plan Guardián ($39/mes)</a>
                         </div>
                     `;
                 } else {
-                    // Si es premium, pintamos el historial con normalidad
                     renderAlertas(registrosEscaneos);
                 }
             }
         }
 
         async function cargarDatosPanel() {
-            const userId = localStorage.getItem('usuario_id');
             try {
                 const response = await fetch(`/api/v1/dashboard/datos?usuario_id=${userId}`);
                 const data = await response.json();
@@ -131,6 +198,13 @@
                     mascotasUsuario = data.mascotas;
                     registrosEscaneos = data.escaneos;
                     
+                    if (data.usuario) {
+                        document.getElementById('user-name').innerText = data.usuario.nombre;
+                        document.getElementById('user-edit-nombre').value = data.usuario.nombre;
+                        document.getElementById('user-edit-email').value = data.usuario.email;
+                        document.getElementById('user-edit-telefono').value = data.usuario.telefono_contacto;
+                    }
+
                     renderMascotas(data.mascotas);
                     renderPedidos(data.placas);
                 }
@@ -151,9 +225,9 @@
                     <h4>${pet.nombre_mascota}</h4>
                     <span class="mascota-badge">${pet.especie}</span>
                     <p style="font-size: 13px; margin-top:10px; color:#64748B;">
-                        Protección: <strong style="color: ${pet.tipo_plan === 'guardian' ? '#E7717D' : '#2E4D68'};">${pet.tipo_plan === 'guardian' ? 'Plan Guardián 🌟' : 'Esencial (Placa)'}</strong>
+                        Protección: <strong style="color: ${pet.tipo_plan === 'guardian' ? '#E7717D' : '#2E4D68'};">${pet.tipo_plan === 'guardian' ? 'Plan Guardián 🌟' : 'Esencial'}</strong>
                     </p>
-                    <a href="registro.html?edit_id=${pet.id}" class="btn-edit-pet"><i class="fa-solid fa-pen-to-square"></i> Editar Datos</a>
+                    <button class="btn-edit-pet" onclick='abrirEditarMascota(${JSON.stringify(pet)})'><i class="fa-solid fa-pen-to-square"></i> Editar Perfil</button>
                 </div>
             `).join('');
         }
@@ -161,18 +235,16 @@
         function renderAlertas(lista) {
             const container = document.getElementById('container-alertas');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map-location-dot"></i>No se registran escaneos. Tu compañero está a salvo.</div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map-location-dot"></i>No se registran escaneos recientes.</div>`;
                 return;
             }
             container.innerHTML = lista.map(esc => `
                 <div class="alert-item">
-                    <div class="alert-info">
-                        <h5>¡Escaneo en la placa de ${esc.nombre_mascota}!</h5>
-                        <p><i class="fa-solid fa-clock"></i> ${new Date(esc.fecha_escaneo).toLocaleString()}</p>
+                    <div>
+                        <h5>¡Escaneo detectado en la placa de ${esc.nombre_mascota}!</h5>
+                        <p style="font-size:13px; color:#94A3B8;"><i class="fa-solid fa-clock"></i> ${new Date(esc.fecha_escaneo).toLocaleString()}</p>
                     </div>
-                    <a href="https://maps.google.com/?q=${esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa">
-                        <i class="fa-solid fa-map"></i> Ver en Google Maps
-                    </a>
+                    <a href="http://googleusercontent.com/maps.google.com/2{esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa"><i class="fa-solid fa-map"></i> Ver Mapa</a>
                 </div>
             `).join('');
         }
@@ -180,20 +252,101 @@
         function renderPedidos(lista) {
             const container = document.getElementById('container-pedidos');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay guías ni envíos pendientes.</div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay guías de envío pendientes.</div>`;
                 return;
             }
             container.innerHTML = lista.map(pl => `
                 <div class="alert-item">
-                    <div class="alert-info">
+                    <div>
                         <h5>Placa Código: <code>${pl.codigo_qr_unico}</code></h5>
-                        <p>Asignada a: <strong>${pl.nombre_mascota || 'En proceso'}</strong></p>
+                        <p style="font-size:13px; color:#94A3B8;">Mascota: <strong>${pl.nombre_mascota || 'En proceso'}</strong></p>
                     </div>
-                    <span class="mascota-badge" style="background:#E2E8F0; color:#2E4D68; text-transform:uppercase;">
-                        ${pl.estado_pedido}
-                    </span>
+                    <span class="mascota-badge" style="background:#E2E8F0; color:#2E4D68; text-transform:uppercase;">${pl.estado_pedido}</span>
                 </div>
             `).join('');
+        }
+
+        // GUARDAR CAMBIOS DE USUARIO
+        async function guardarPerfilUsuario(e) {
+            e.preventDefault();
+            const payload = {
+                usuario_id: userId,
+                nombre: document.getElementById('user-edit-nombre').value,
+                telefono: document.getElementById('user-edit-telefono').value,
+                password: document.getElementById('user-edit-password').value
+            };
+
+            const response = await fetch('/api/v1/usuarios/editar', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.success) {
+                alert("¡Perfil actualizado con éxito!");
+                localStorage.setItem('usuario_nombre', payload.nombre);
+                document.getElementById('user-name').innerText = payload.nombre;
+            } else {
+                alert("Error al actualizar perfil.");
+            }
+        }
+
+        // CONTROL DE MODAL MASCOTA
+        function abrirEditarMascota(pet) {
+            document.getElementById('edit-pet-id').value = pet.id;
+            document.getElementById('edit-pet-nombre').value = pet.nombre_mascota;
+            document.getElementById('edit-pet-especie').value = pet.especie;
+            document.getElementById('edit-pet-raza').value = pet.raza || '';
+            document.getElementById('edit-pet-fotourl').value = pet.foto_url || '';
+            document.getElementById('edit-pet-preview').src = pet.foto_url || 'https://via.placeholder.com/150';
+            document.getElementById('edit-pet-notas').value = pet.notas_medicas || '';
+            document.getElementById('edit-pet-contactoalt').value = pet.contacto_alternativo || '';
+            document.getElementById('modal-edit-pet').style.display = 'flex';
+        }
+
+        function cerrarModalMascota() {
+            document.getElementById('modal-edit-pet').style.display = 'none';
+        }
+
+        function cambiarFotoMascota() {
+            const myWidget = cloudinary.createUploadWidget({
+                cloudName: "TU_CLOUD_NAME_AQUÍ", uploadPreset: "TU_UPLOAD_PRESET_AQUÍ",
+                cropping: true, multiple: false
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    document.getElementById('edit-pet-fotourl').value = result.info.secure_url;
+                    document.getElementById('edit-pet-preview').src = result.info.secure_url;
+                }
+            });
+            myWidget.open();
+        }
+
+        async function guardarMascota(e) {
+            e.preventDefault();
+            const payload = {
+                mascota_id: document.getElementById('edit-pet-id').value,
+                usuario_id: userId,
+                nombre_mascota: document.getElementById('edit-pet-nombre').value,
+                especie: document.getElementById('edit-pet-especie').value,
+                raza: document.getElementById('edit-pet-raza').value,
+                foto_url: document.getElementById('edit-pet-fotourl').value,
+                notas_medicas: document.getElementById('edit-pet-notas').value,
+                contacto_alternativo: document.getElementById('edit-pet-contactoalt').value
+            };
+
+            const response = await fetch('/api/v1/mascotas/editar', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.success) {
+                alert("¡Datos de la mascota actualizados!");
+                cerrarModalMascota();
+                cargarDatosPanel();
+            } else {
+                alert("Error al actualizar la mascota.");
+            }
         }
 
         window.addEventListener('DOMContentLoaded', cargarDatosPanel);
