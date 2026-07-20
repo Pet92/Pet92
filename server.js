@@ -126,7 +126,7 @@ app.post('/api/v1/registrar-pre-pago', async (req, res) => {
                 mascota_id: mascotaId.toString(),
                 plan_tipo: plan
             },
-            success_url: `${req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${req.headers.origin}/status.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${req.headers.origin}/index.html`,
         });
 
