@@ -103,8 +103,9 @@ app.post('/api/v1/registrar-pre-pago', async (req, res) => {
         }
 
         // 2. Insertar los datos de la mascota enlazando al usuario
+        // 2. Insertar los datos de la mascota enlazando al usuario
         const mascotaQuery = await pool.query(
-            `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notes_medicas, estado) 
+            `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, estado) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
             [usuarioId, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, 'Pendiente de Pago']
         );
