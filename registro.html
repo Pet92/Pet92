@@ -166,16 +166,17 @@
 
             // 2. Recopilamos todos los datos estructurados del formulario
             const datosPayload = {
-                nombre_mascota: document.getElementById('nombre').value,
+                usuario_id: localStorage.getItem('usuario_id') || null, // VÍNCULO CLAVE
+                nombre_mascota: document.getElementById('nombre_mascota').value,
                 especie: document.getElementById('especie').value,
                 raza: document.getElementById('raza').value,
                 foto_url: fotoUrl,
                 notas_medicas: document.getElementById('notas').value,
                 contacto_alternativo: document.getElementById('contacto-alt').value,
                 plan: planEnMemoria,
-                email_dueno: 'cliente_prueba@correo.com', // Datos simulados temporales para el webhook
-                nombre_dueno: 'Cliente Prueba',
-                telefono_dueno: '5511223344'
+                email_dueno: localStorage.getItem('usuario_email') || document.getElementById('email_dueno').value,
+                nombre_dueno: localStorage.getItem('usuario_nombre') || document.getElementById('nombre_dueno').value,
+                telefono_dueno: localStorage.getItem('usuario_telefono') || document.getElementById('telefono_dueno').value
             };
 
             try {
