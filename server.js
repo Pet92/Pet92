@@ -228,6 +228,60 @@ app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), as
     res.json({ received: true });
 });
 
+
+// ============================================================
+// ENDPOINT CONCENTRADOR PARA EL DASHBOARD DEL USUARIO
+// ============================================================
+app.get('/api/v1/dashboard/datos', async (req, res) => {
+    const { usuario_id } = req.query; // Recibe el ID del usuario logueado
+
+    if(!usuario_id) {
+        return res.status(400).json({ success: false, error: 'Se requiere la ID del usuario.' });
+    }
+
+    try {
+        // 1. Obtener todas las mascotas del usuario
+        const mascotas = await pool.query(
+            `SELECT id, nombre_mascota, especie, raza, foto_url, estado 
+             FROM mascotas WHERE usuario_id = $1 ORDER BY id DESC`, 
+            [usuario_id]
+        );
+
+        // 2. Obtener todas las alertas de escaneo con ubicación GPS de sus mascotas
+        const escaneos = await pool.query(
+            `SELECT h.fecha_escaneo, h.latitud, h.longitud, m.nombre_mascota 
+             FROM historial_escaneos h
+             JOIN placas p ON h.placa_id = p.id
+             JOIN mascotas m ON p.mascota_id = m.id
+             WHERE m.usuario_id = $1 ORDER BY h.fecha_escaneo DESC`, 
+            [usuario_id]
+        );
+
+        // 3. Obtener el estatus de las guías de envío de sus placas compradas
+        const placas = await pool.query(
+            `SELECT p.codigo_qr_unico, p.estado_pedido, m.nombre_mascota 
+             FROM placas p
+             LEFT JOIN mascotas m ON p.mascota_id = m.id
+             WHERE m.usuario_id = $1 OR p.mascota_id IS NULL ORDER BY p.id DESC`, 
+            [usuario_id]
+        );
+
+        // Devolvemos todo el paquete estructurado al frontend
+        res.json({
+            success: true,
+            mascotas: 一般 = mascotas.rows,
+            escaneos: escaneos.rows,
+            placas: placas.rows
+        });
+
+    } catch (error) {
+        console.error("Error al recopilar datos del Dashboard:", error);
+        res.status(500).json({ success: false, error: 'Error interno al consultar la base de datos.' });
+    }
+});
+
+
+
 // Encendido global
 app.listen(PORT, async () => {
     console.log(`Servidor SmartPet ID corriendo en el puerto ${PORT}`);
