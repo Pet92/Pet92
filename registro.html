@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configura tu SmartPet ID</title>
+    <title>Configura tu Pet92 - Datos de tu Mascota</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -13,72 +13,66 @@
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Lato', sans-serif;
-            background-color: #FFFBF1;
-            color: #475569;
-            padding: 40px 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05);
-            text-align: center;
-        }
-        .success-icon {
-            font-size: 60px;
-            color: #25D366;
-            margin-bottom: 20px;
-        }
-        h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 10px; }
-        .subtitle { color: #64748B; margin-bottom: 30px; }
-        
-        /* Estilos del Formulario */
-        form { text-align: left; margin-top: 20px; }
+        body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; }
+
+        /* Navbar idéntico al del Dashboard */
+        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 30px; }
+        .logo { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; color: #2E4D68; text-decoration: none; }
+        .logo span { color: #E7717D; }
+        .btn-back-home { color: #64748B; text-decoration: none; font-weight: 700; }
+
+        .container { max-width: 600px; margin: 0 auto 40px auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05); }
+        h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 10px; text-align: center; }
+        .subtitle { color: #64748B; margin-bottom: 30px; text-align: center; }
+        form { text-align: left; }
         .form-group { margin-bottom: 20px; }
+        .section-title { font-family: 'Poppins', sans-serif; font-size: 18px; color: #E7717D; margin: 25px 0 15px 0; border-bottom: 1px solid #E2E8F0; padding-bottom: 5px; }
         label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 8px; }
-        input[type="text"], textarea, select {
-            width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px;
-            font-size: 16px; font-family: 'Lato', sans-serif; outline: none;
+        input[type="text"], input[type="email"], textarea, select {
+            width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; font-family: 'Lato', sans-serif; outline: none;
         }
         input:focus, textarea:focus { border-color: #D1E8E2; }
-        
-        /* Botón de Cloudinary e Imagen */
         .btn-upload {
-            display: inline-block; background-color: #D1E8E2; color: #2E4D68;
-            padding: 12px 20px; border-radius: 8px; border: none; font-weight: 700;
-            cursor: pointer; margin-bottom: 15px; font-family: 'Poppins', sans-serif;
+            display: inline-block; background-color: #D1E8E2; color: #2E4D68; padding: 12px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; margin-bottom: 15px; font-family: 'Poppins', sans-serif;
         }
-        #preview-foto {
-            width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
-            display: none; margin: 10px 0; border: 3px solid #E2E8F0;
-        }
-        
+        #preview-foto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: none; margin: 10px 0; border: 3px solid #E2E8F0; }
         .btn-submit {
-            display: block; width: 100%; background-color: #E7717D; color: white;
-            padding: 16px; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif;
-            font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 30px;
-            box-shadow: 0 4px 14px rgba(231, 113, 125, 0.3);
+            display: block; width: 100%; background-color: #E7717D; color: white; padding: 16px; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 30px; box-shadow: 0 4px 14px rgba(231, 113, 125, 0.3);
         }
         .btn-submit:hover { background-color: #d65d69; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
-        <h2>¡Gracias por tu compra!</h2>
-        <p class="subtitle">Tu placa SmartPet ID va en camino. Mientras tanto, vamos a activar el perfil digital de tu mascota.</p>
+    <header class="navbar">
+        <a href="index.html" class="logo">Pet<span>92</span></a>
+        <a href="index.html" class="btn-back-home"><i class="fa-solid fa-house"></i> Volver a Inicio</a>
+    </header>
 
-        <form id="form-mascota">
+    <div class="container">
+        <h2>Paso 1: Crea el perfil de tu mascota</h2>
+        <p class="subtitle">Ingresa sus datos primero. En el siguiente paso procederemos de forma segura al empaque y pago de su placa física.</p>
+
+        <form id="form-registro-completo">
+            <div class="section-title">Datos del Dueño</div>
             <div class="form-group">
-                <label>Nombre de la Mascota *</label>
-                <input type="text" id="nombre" required placeholder="Ej. Max, Camila...">
+                <label>Tu Nombre Completo *</label>
+                <input type="text" id="nombre_dueno" required placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico *</label>
+                <input type="email" id="email_dueno" required placeholder="ejemplo@correo.com">
+            </div>
+            <div class="form-group">
+                <label>Teléfono Celular (Principal para alertas) *</label>
+                <input type="text" id="telefono_dueno" required placeholder="Ej. +52 81 1234 5678">
             </div>
 
+            <div class="section-title">Información de tu Mascota</div>
+            <div class="form-group">
+                <label>Nombre de la Mascota *</label>
+                <input type="text" id="nombre_mascota" required placeholder="Ej. Max, Camila...">
+            </div>
             <div class="form-group">
                 <label>Especie *</label>
                 <select id="especie" required>
@@ -87,123 +81,53 @@
                     <option value="Otro">Otro</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>Raza</label>
-                <input type="text" id="raza" placeholder="Ej. Golden Retriever, Mestizo...">
+                <input type="text" id="raza" placeholder="Ej. Schnauzer, Mestizo...">
             </div>
-
             <div class="form-group">
-                <label>Foto de tu Mascota *</label>
+                <label>Foto identificadora *</label>
                 <button type="button" id="upload-widget-btn" class="btn-upload">
-                    <i class="fa-solid fa-camera"></i> Seleccionar Foto
+                    <i class="fa-solid fa-camera"></i> Subir Foto de tu Peludo
                 </button>
                 <br>
                 <img id="preview-foto" src="" alt="Vista previa">
                 <input type="hidden" id="foto-url">
             </div>
-
             <div class="form-group">
-                <label>Notas Médicas o Alergias Críticas</label>
-                <textarea id="notas" rows="3" placeholder="Ej. Es diabético, requiere insulina. Es muy asustadizo con los truenos..."></textarea>
+                <label>Notas Médicas o Alergias Importantes</label>
+                <textarea id="notas" rows="3" placeholder="Ej. Requiere medicamentos diarios / Es muy temeroso..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Teléfono de Respaldo / Alternativo</label>
+                <input type="text" id="contacto-alt" placeholder="Ej. Teléfono de un familiar">
             </div>
 
-            <div class="form-group">
-                <label>Teléfono de Contacto Alternativo (Opcional)</label>
-                <input type="text" id="contacto-alt" placeholder="Ej. +52 81 2233 4455">
-            </div>
-
-            <button type="submit" class="btn-submit">Guardar Perfil y Activar Placa</button>
+            <button type="submit" class="btn-submit" id="submit-btn">Continuar al Pago Seguro <i class="fa-solid fa-credit-card"></i></button>
         </form>
     </div>
 
     <script>
-        // CONFIGURA AQUÍ TUS DATOS DE CLOUDINARY
-        const CLOUD_NAME = "xsimrdtd"; 
-        const UPLOAD_PRESET = "tj07fxky"; 
+        // Pre-llenar datos del usuario si ya inició sesión
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('usuario_nombre')) {
+                document.getElementById('nombre_dueno').value = localStorage.getItem('usuario_nombre');
+            }
+            if (localStorage.getItem('usuario_email')) {
+                document.getElementById('email_dueno').value = localStorage.getItem('usuario_email');
+            }
+            if (localStorage.getItem('usuario_telefono')) {
+                document.getElementById('telefono_dueno').value = localStorage.getItem('usuario_telefono');
+            }
+        });
 
-        // Inicializar el Widget de Carga de Cloudinary
+        // CONFIGURACIÓN DE TU CLOUDINARY
+        const CLOUD_NAME = "TU_CLOUD_NAME_AQUÍ"; 
+        const UPLOAD_PRESET = "TU_UPLOAD_PRESET_AQUÍ"; 
+
         const myWidget = cloudinary.createUploadWidget({
-            cloudName: CLOUD_NAME, 
-            uploadPreset: UPLOAD_PRESET,
-            cropping: true, // Permite al usuario recortar la foto en círculo/cuadrado
-            multiple: false, // Solo una foto por perfil
+            cloudName: CLOUD_NAME, uploadPreset: UPLOAD_PRESET,
+            cropping: true, multiple: false,
             clientAllowedFormats: ["png", "jpg", "jpeg", "webp"],
         }, (error, result) => { 
-            if (!error && result && result.event === "success") { 
-                console.log('Imagen subida con éxito: ', result.info.secure_url);
-                // 1. Guardamos la URL pública que nos da Cloudinary en el input oculto
-                document.getElementById('foto-url').value = result.info.secure_url;
-                // 2. Mostramos la miniatura de la foto en la pantalla
-                const imgPreview = document.getElementById('preview-foto');
-                imgPreview.src = result.info.secure_url;
-                imgPreview.style.display = "inline-block";
-            }
-        });
-
-        // Abrir el widget al hacer clic en el botón de cámara
-        document.getElementById("upload-widget-btn").addEventListener("click", function(){
-            myWidget.open();
-        }, false);
-
-        // Enviar todo el formulario al Backend al hacer clic en guardar
-        document.getElementById('form-mascota').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const fotoUrl = document.getElementById('foto-url').value;
-            if(!fotoUrl) {
-                alert("Por favor, sube una foto para tu mascota.");
-                return;
-            }
-
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            submitBtn.innerText = "Preparando pasarela de pago segura...";
-            submitBtn.disabled = true;
-
-            // 1. Recuperamos el plan que el usuario seleccionó en la Landing Page
-            // Si no encuentra nada, le asignamos 'basico' por defecto
-            const planEnMemoria = localStorage.getItem('plan_selected') || localStorage.getItem('plan_seleccionado') || 'basico';
-
-            // 2. Recopilamos todos los datos estructurados del formulario
-            const datosPayload = {
-                usuario_id: localStorage.getItem('usuario_id') || null, // VÍNCULO CLAVE
-                nombre_mascota: document.getElementById('nombre_mascota').value,
-                especie: document.getElementById('especie').value,
-                raza: document.getElementById('raza').value,
-                foto_url: fotoUrl,
-                notas_medicas: document.getElementById('notas').value,
-                contacto_alternativo: document.getElementById('contacto-alt').value,
-                plan: planEnMemoria,
-                email_dueno: localStorage.getItem('usuario_email') || document.getElementById('email_dueno').value,
-                nombre_dueno: localStorage.getItem('usuario_nombre') || document.getElementById('nombre_dueno').value,
-                telefono_dueno: localStorage.getItem('usuario_telefono') || document.getElementById('telefono_dueno').value
-            };
-
-            try {
-                // 3. Hacemos la petición real al backend en Render
-                const response = await fetch('/api/v1/registrar-pre-pago', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datosPayload)
-                });
-                
-                const data = await response.json();
-                
-                // 4. Si el servidor generó la sesión con éxito, redirigimos a Stripe
-                if (data.url) {
-                    window.location.href = data.url;
-                } else {
-                    alert('Error del servidor: No se pudo generar la sesión de pago.');
-                    submitBtn.innerText = "Guardar Perfil y Activar Placa";
-                    submitBtn.disabled = false;
-                }
-            } catch (error) {
-                console.error("Error al conectar con la API:", error);
-                alert("No se pudo conectar con el servidor backend para iniciar el cobro.");
-                submitBtn.innerText = "Guardar Perfil y Activar Placa";
-                submitBtn.disabled = false;
-            }
-        });
-    </script>
-</body>
-</html>
+            if (!

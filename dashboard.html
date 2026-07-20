@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel de Control - SmartPet ID</title>
+    <title>Mi Panel de Control - Pet92</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
         body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; }
         
         .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: #2E4D68; text-decoration: none; }
+        .logo { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; color: #2E4D68; text-decoration: none; }
         .logo span { color: #E7717D; }
         .btn-back-home { color: #64748B; text-decoration: none; font-weight: 700; }
 
@@ -37,7 +37,6 @@
         .mascota-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; margin-top: 5px; background: #D1E8E2; color: #2E4D68; }
         .btn-edit-pet { display: block; width: 100%; margin-top: 15px; padding: 10px; background: #2E4D68; border: none; border-radius: 6px; font-weight: 700; color: white; cursor: pointer; font-size: 14px; text-align: center; }
 
-        /* Estilos de Formulario */
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 6px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px; }
@@ -48,7 +47,6 @@
         .empty-state { text-align: center; padding: 50px 20px; color: #94A3B8; }
         .empty-state i { font-size: 50px; margin-bottom: 15px; display: block; }
 
-        /* Modal Edición Mascota */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46,77,104,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 30px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #94A3B8; }
@@ -57,7 +55,7 @@
 <body>
 
     <header class="navbar">
-        <a href="index.html" class="logo">SmartPet<span>ID</span></a>
+        <a href="index.html" class="logo">Pet<span>92</span></a>
         <a href="index.html" class="btn-back-home"><i class="fa-solid fa-house"></i> Volver a Inicio</a>
     </header>
 
@@ -244,7 +242,7 @@
                         <h5>¡Escaneo detectado en la placa de ${esc.nombre_mascota}!</h5>
                         <p style="font-size:13px; color:#94A3B8;"><i class="fa-solid fa-clock"></i> ${new Date(esc.fecha_escaneo).toLocaleString()}</p>
                     </div>
-                    <a href="http://googleusercontent.com/maps.google.com/2{esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa"><i class="fa-solid fa-map"></i> Ver Mapa</a>
+                    <a href="https://maps.google.com/?q=${esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa"><i class="fa-solid fa-map"></i> Ver Mapa</a>
                 </div>
             `).join('');
         }
@@ -252,104 +250,4 @@
         function renderPedidos(lista) {
             const container = document.getElementById('container-pedidos');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay guías de envío pendientes.</div>`;
-                return;
-            }
-            container.innerHTML = lista.map(pl => `
-                <div class="alert-item">
-                    <div>
-                        <h5>Placa Código: <code>${pl.codigo_qr_unico}</code></h5>
-                        <p style="font-size:13px; color:#94A3B8;">Mascota: <strong>${pl.nombre_mascota || 'En proceso'}</strong></p>
-                    </div>
-                    <span class="mascota-badge" style="background:#E2E8F0; color:#2E4D68; text-transform:uppercase;">${pl.estado_pedido}</span>
-                </div>
-            `).join('');
-        }
-
-        // GUARDAR CAMBIOS DE USUARIO
-        async function guardarPerfilUsuario(e) {
-            e.preventDefault();
-            const payload = {
-                usuario_id: userId,
-                nombre: document.getElementById('user-edit-nombre').value,
-                telefono: document.getElementById('user-edit-telefono').value,
-                password: document.getElementById('user-edit-password').value
-            };
-
-            const response = await fetch('/api/v1/usuarios/editar', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if(data.success) {
-                alert("¡Perfil actualizado con éxito!");
-                localStorage.setItem('usuario_nombre', payload.nombre);
-                document.getElementById('user-name').innerText = payload.nombre;
-            } else {
-                alert("Error al actualizar perfil.");
-            }
-        }
-
-        // CONTROL DE MODAL MASCOTA
-        function abrirEditarMascota(pet) {
-            document.getElementById('edit-pet-id').value = pet.id;
-            document.getElementById('edit-pet-nombre').value = pet.nombre_mascota;
-            document.getElementById('edit-pet-especie').value = pet.especie;
-            document.getElementById('edit-pet-raza').value = pet.raza || '';
-            document.getElementById('edit-pet-fotourl').value = pet.foto_url || '';
-            document.getElementById('edit-pet-preview').src = pet.foto_url || 'https://via.placeholder.com/150';
-            document.getElementById('edit-pet-notas').value = pet.notas_medicas || '';
-            document.getElementById('edit-pet-contactoalt').value = pet.contacto_alternativo || '';
-            document.getElementById('modal-edit-pet').style.display = 'flex';
-        }
-
-        function cerrarModalMascota() {
-            document.getElementById('modal-edit-pet').style.display = 'none';
-        }
-
-        function cambiarFotoMascota() {
-            const myWidget = cloudinary.createUploadWidget({
-                cloudName: "TU_CLOUD_NAME_AQUÍ", uploadPreset: "TU_UPLOAD_PRESET_AQUÍ",
-                cropping: true, multiple: false
-            }, (error, result) => {
-                if (!error && result && result.event === "success") {
-                    document.getElementById('edit-pet-fotourl').value = result.info.secure_url;
-                    document.getElementById('edit-pet-preview').src = result.info.secure_url;
-                }
-            });
-            myWidget.open();
-        }
-
-        async function guardarMascota(e) {
-            e.preventDefault();
-            const payload = {
-                mascota_id: document.getElementById('edit-pet-id').value,
-                usuario_id: userId,
-                nombre_mascota: document.getElementById('edit-pet-nombre').value,
-                especie: document.getElementById('edit-pet-especie').value,
-                raza: document.getElementById('edit-pet-raza').value,
-                foto_url: document.getElementById('edit-pet-fotourl').value,
-                notas_medicas: document.getElementById('edit-pet-notas').value,
-                contacto_alternativo: document.getElementById('edit-pet-contactoalt').value
-            };
-
-            const response = await fetch('/api/v1/mascotas/editar', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if(data.success) {
-                alert("¡Datos de la mascota actualizados!");
-                cerrarModalMascota();
-                cargarDatosPanel();
-            } else {
-                alert("Error al actualizar la mascota.");
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', cargarDatosPanel);
-    </script>
-</body>
-</html>
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay gu
