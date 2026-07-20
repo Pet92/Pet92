@@ -4,397 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartPet ID - Tu mascota siempre segura</title>
-    <!-- Fuentes oficiales del proyecto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Iconos para diseño visual -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         /* ==========================================
            1. ESTILOS GLOBALES Y RESET
            ========================================== */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Lato', sans-serif;
-            background-color: #FFFBF1; /* Fondo Crema Cálido */
-            color: #475569;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .badge {
-            display: inline-block;
-            background-color: #D1E8E2; /* Verde Salvia */
-            color: #2E4D68;
-            font-weight: 700;
-            font-size: 14px;
-            padding: 6px 16px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; line-height: 1.6; overflow-x: hidden; }
+        .badge { display: inline-block; background-color: #D1E8E2; color: #2E4D68; font-weight: 700; font-size: 14px; padding: 6px 16px; border-radius: 20px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* ==========================================
            2. MENÚ DE NAVEGACIÓN (NAVBAR)
            ========================================== */
-        .navbar {
-            display: table;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px 24px;
-        }
-        
-        .logo {
-            display: table-cell;
-            vertical-align: middle;
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: #2E4D68;
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: #E7717D; /* Coral */
-        }
-
-        .nav-links {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: right;
-        }
-
-        .nav-links a {
-            color: #2E4D68;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            margin-left: 20px;
-        }
+        .navbar { display: table; width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+        .logo { display: table-cell; vertical-align: middle; font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 700; color: #2E4D68; text-decoration: none; }
+        .logo span { color: #E7717D; }
+        .nav-links { display: table-cell; vertical-align: middle; text-align: right; }
+        .nav-links a, .nav-links button { color: #2E4D68; text-decoration: none; font-weight: 700; font-size: 16px; margin-left: 20px; background: none; border: none; cursor: pointer; font-family: 'Lato', sans-serif; }
+        .nav-links .btn-logout { color: #E7717D; display: none; }
 
         /* ==========================================
            3. SECCIÓN HERO PRINCIPAL
            ========================================== */
-        .hero-section {
-            max-width: 1200px;
-            margin: 40px auto 80px auto;
-            padding: 0 24px;
-            display: table;
-            width: 100%;
-        }
-
-        .hero-column {
-            display: table-cell;
-            width: 50%;
-            vertical-align: middle;
-            padding: 20px;
-        }
-
-        .hero-text-content {
-            padding-right: 40px;
-        }
-
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 42px;
-            color: #2E4D68;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-
-        h1 span {
-            color: #E7717D;
-        }
-
-        .hero-description {
-            font-size: 18px;
-            margin-bottom: 35px;
-            color: #64748B;
-        }
-
-        .hero-cta-btn {
-            display: inline-block;
-            background-color: #E7717D;
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 16px 36px;
-            border-radius: 8px;
-            box-shadow: 0 4px 14px rgba(231, 113, 125, 0.4);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .hero-cta-btn:hover {
-            background-color: #d65d69;
-            transform: translateY(-2px);
-        }
-
-        .shipping-notice {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #94A3B8;
-        }
-
-        .shipping-notice i {
-            color: #2E4D68;
-            margin-right: 5px;
-        }
-
-        .hero-image-wrapper {
-            position: relative;
-            text-align: center;
-        }
-
-        .main-hero-image {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(46, 77, 104, 0.15);
-            display: inline-block;
-        }
-
-        .floating-card {
-            position: absolute;
-            bottom: 30px;
-            left: -20px;
-            background-color: white;
-            padding: 15px 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            text-align: left;
-            border-left: 5px solid #D1E8E2;
-            width: 240px;
-        }
-
-        .floating-card h4 {
-            font-family: 'Poppins', sans-serif;
-            color: #2E4D68;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .floating-card p {
-            font-size: 13px;
-            color: #64748B;
-        }
+        .hero-section { max-width: 1200px; margin: 40px auto 80px auto; padding: 0 24px; display: table; width: 100%; }
+        .hero-column { display: table-cell; width: 50%; vertical-align: middle; padding: 20px; }
+        .hero-text-content { padding-right: 40px; }
+        h1 { font-family: 'Poppins', sans-serif; font-size: 42px; color: #2E4D68; line-height: 1.2; margin-bottom: 20px; }
+        h1 span { color: #E7717D; }
+        .hero-description { font-size: 18px; margin-bottom: 35px; color: #64748B; }
+        .hero-cta-btn { display: inline-block; background-color: #E7717D; color: white; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; text-decoration: none; padding: 16px 36px; border-radius: 8px; box-shadow: 0 4px 14px rgba(231, 113, 125, 0.4); transition: transform 0.2s ease, background-color 0.2s ease; }
+        .hero-cta-btn:hover { background-color: #d65d69; transform: translateY(-2px); }
+        .shipping-notice { margin-top: 15px; font-size: 14px; color: #94A3B8; }
+        .shipping-notice i { color: #2E4D68; margin-right: 5px; }
+        .hero-image-wrapper { position: relative; text-align: center; }
+        .main-hero-image { width: 100%; max-width: 500px; border-radius: 24px; box-shadow: 0 20px 40px rgba(46, 77, 104, 0.15); display: inline-block; }
+        .floating-card { position: absolute; bottom: 30px; left: -20px; background-color: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: left; border-left: 5px solid #D1E8E2; width: 240px; }
+        .floating-card h4 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 16px; margin-bottom: 4px; }
+        .floating-card p { font-size: 13px; color: #64748B; }
 
         /* ==========================================
            4. SECCIÓN TABLA DE PRECIOS
            ========================================== */
-        .pricing-section {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 24px;
-        }
-
-        .pricing-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .pricing-header h2 {
-            font-family: 'Poppins', sans-serif;
-            color: #2E4D68;
-            font-size: 36px;
-            margin: 10px 0;
-        }
-
-        .pricing-container {
-            display: table;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 24px 0;
-        }
-
-        .price-card {
-            display: table-cell;
-            width: 50%;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05);
-            border: 2px solid #E2E8F0;
-            vertical-align: top;
-            position: relative;
-        }
-
-        .price-card.featured {
-            border-color: #E7717D;
-            box-shadow: 0 15px 35px rgba(231, 113, 125, 0.15);
-        }
-
-        .featured-badge {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #E7717D;
-            color: white;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 700;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .price-card h3 {
-            font-family: 'Poppins', sans-serif;
-            color: #2E4D68;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        .price-amount {
-            font-size: 48px;
-            font-weight: 700;
-            color: #2E4D68;
-            line-height: 1;
-            margin-bottom: 10px;
-        }
-
-        .price-amount span {
-            font-size: 20px;
-            font-weight: 400;
-        }
-
-        .price-amount small {
-            font-size: 16px;
-            color: #64748B;
-            font-weight: 400;
-            display: block;
-            margin-top: 5px;
-        }
-
-        .plan-subtitle {
-            color: #64748B;
-            font-size: 15px;
-            margin-bottom: 30px;
-        }
-
-        .plan-features {
-            list-style: none;
-            margin-bottom: 40px;
-        }
-
-        .plan-features li {
-            margin-bottom: 12px;
-            font-size: 16px;
-            color: #475569;
-        }
-
-        .plan-features li i.fa-check {
-            color: #25D366;
-            margin-right: 10px;
-        }
-
-        .plan-features li i.fa-xmark {
-            color: #94A3B8;
-            margin-right: 13px;
-            margin-left: 3px;
-        }
-
-        .plan-features li.disabled {
-            color: #94A3B8;
-            text-decoration: line-through;
-        }
-
-        .btn-checkout {
-            display: block;
-            text-align: center;
-            padding: 16px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            transition: background 0.2s;
-        }
-
-        .plan-basic-btn {
-            background-color: #F1F5F9;
-            color: #2E4D68;
-            border: 1px solid #CBD5E1;
-        }
-
-        .plan-basic-btn:hover {
-            background-color: #E2E8F0;
-        }
-
-        .plan-featured-btn {
-            background-color: #E7717D;
-            color: white;
-        }
-
-        .plan-featured-btn:hover {
-            background-color: #d65d69;
-        }
+        .pricing-section { max-width: 1200px; margin: 80px auto; padding: 0 24px; }
+        .pricing-header { text-align: center; margin-bottom: 50px; }
+        .pricing-header h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 36px; margin: 10px 0; }
+        .pricing-container { display: table; width: 100%; border-collapse: separate; border-spacing: 24px 0; }
+        .price-card { display: table-cell; width: 50%; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05); border: 2px solid #E2E8F0; vertical-align: top; position: relative; }
+        .price-card.featured { border-color: #E7717D; box-shadow: 0 15px 35px rgba(231, 113, 125, 0.15); }
+        .featured-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background-color: #E7717D; color: white; padding: 4px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+        .price-card h3 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 24px; margin-bottom: 15px; }
+        .price-amount { font-size: 48px; font-weight: 700; color: #2E4D68; line-height: 1; margin-bottom: 10px; }
+        .price-amount span { font-size: 20px; font-weight: 400; }
+        .price-amount small { font-size: 16px; color: #64748B; font-weight: 400; display: block; margin-top: 5px; }
+        .plan-subtitle { color: #64748B; font-size: 15px; margin-bottom: 30px; }
+        .plan-features { list-style: none; margin-bottom: 40px; }
+        .plan-features li { margin-bottom: 12px; font-size: 16px; color: #475569; }
+        .plan-features li i.fa-check { color: #25D366; margin-right: 10px; }
+        .plan-features li i.fa-xmark { color: #94A3B8; margin-right: 13px; margin-left: 3px; }
+        .plan-features li.disabled { color: #94A3B8; text-decoration: line-through; }
+        .btn-checkout { display: block; text-align: center; padding: 16px; border-radius: 10px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; transition: background 0.2s; cursor: pointer; }
+        .plan-basic-btn { background-color: #F1F5F9; color: #2E4D68; border: 1px solid #CBD5E1; }
+        .plan-basic-btn:hover { background-color: #E2E8F0; }
+        .plan-featured-btn { background-color: #E7717D; color: white; }
+        .plan-featured-btn:hover { background-color: #d65d69; }
 
         /* ==========================================
-           5. RESPONSIVIDAD GENERAL (MÓVILES)
+           5. VENTANA MODAL (LOGIN / REGISTRO)
            ========================================== */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46, 77, 104, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 450px; border-radius: 20px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); position: relative; animation: fadeIn 0.3s ease; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 20px; color: #94A3B8; cursor: pointer; border: none; background: none; }
+        
+        /* Pestañas de la Modal */
+        .modal-tabs { display: flex; border-bottom: 2px solid #E2E8F0; margin-bottom: 25px; }
+        .tab-btn { flex: 1; padding: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; text-align: center; background: none; border: none; cursor: pointer; color: #94A3B8; }
+        .tab-btn.active { color: #E7717D; border-bottom: 3px solid #E7717D; margin-bottom: -2px; }
+        
+        .modal-form { display: none; }
+        .modal-form.active { display: block; }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 6px; font-size: 14px; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px; outline: none; }
+        .form-group input:focus { border-color: #D1E8E2; }
+        .btn-form-submit { width: 100%; background: #2E4D68; color: white; border: none; padding: 14px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-form-submit:hover { background: #1e3347; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsividad Móvil */
         @media screen and (max-width: 768px) {
-            .navbar, .hero-section, .pricing-container {
-                display: block;
-            }
-
-            .logo, .nav-links, .hero-column, .price-card {
-                display: block;
-                width: 100%;
-                text-align: center;
-            }
-
-            .nav-links {
-                margin-top: 15px;
-            }
-
-            .nav-links a {
-                margin: 0 10px;
-            }
-
-            .hero-text-content {
-                padding-right: 0;
-                margin-bottom: 40px;
-            }
-
-            h1 {
-                font-size: 32px;
-            }
-
-            .floating-card {
-                left: 50%;
-                margin-left: -120px;
-                bottom: -20px;
-            }
-
-            .price-card {
-                margin-bottom: 40px;
-            }
+            .navbar, .hero-section, .pricing-container { display: block; }
+            .logo, .nav-links, .hero-column, .price-card { display: block; width: 100%; text-align: center; }
+            .nav-links { margin-top: 15px; }
+            .nav-links a, .nav-links button { margin: 0 10px; }
+            .hero-text-content { padding-right: 0; margin-bottom: 40px; }
+            h1 { font-size: 32px; }
+            .floating-card { left: 50%; margin-left: -120px; bottom: -20px; }
+            .price-card { margin-bottom: 40px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Menú de Navegación -->
     <header class="navbar">
         <a href="#" class="logo">SmartPet<span>ID</span></a>
         <nav class="nav-links">
             <a href="#precios">Planes y Precios</a>
-            <a href="mailto:soporte@smartpetid.com">Soporte</a>
+            <button id="btn-nav-auth" onclick="abrirModal('login')">Iniciar Sesión</button>
+            <button id="btn-nav-logout" class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </nav>
     </header>
 
-    <!-- Sección Principal (Hero) -->
     <section class="hero-section">
         <div class="hero-column">
             <div class="hero-text-content">
@@ -403,15 +127,10 @@
                 <p class="hero-description">
                     Si tu mascota se pierde, cualquier persona puede escanear su placa con su celular. Recibirás una alerta instantánea con su ubicación GPS y el rescatista podrá contactarte en un clic. Sin aplicaciones necesarias.
                 </p>
-                <a href="#precios" class="hero-cta-btn">
-                    Ver Planes de Protección <i class="fa-solid fa-arrow-down"></i>
-                </a>
-                <p class="shipping-notice">
-                    <i class="fa-solid fa-truck-fast"></i> Envíos rápidos a todo México y USA.
-                </p>
+                <a href="#precios" class="hero-cta-btn">Ver Planes de Protección <i class="fa-solid fa-arrow-down"></i></a>
+                <p class="shipping-notice"><i class="fa-solid fa-truck-fast"></i> Envíos rápidos a todo México y USA.</p>
             </div>
         </div>
-
         <div class="hero-column">
             <div class="hero-image-wrapper">
                 <img src="http://googleusercontent.com/image_collection/image_retrieval/6252221593101686693" alt="Perro protegido con placa SmartPet ID" class="main-hero-image">
@@ -423,7 +142,6 @@
         </div>
     </section>
 
-    <!-- Sección de Precios -->
     <section id="precios" class="pricing-section">
         <div class="pricing-header">
             <span class="badge"><i class="fa-solid fa-tags"></i> Cobertura Mex / USA</span>
@@ -432,12 +150,10 @@
         </div>
 
         <div class="pricing-container">
-            <!-- PLAN BÁSICO -->
             <div class="price-card">
                 <h3>Plan Esencial</h3>
                 <div class="price-amount">$299 <span>MXN</span> <small>/ Pago Único</small></div>
                 <p class="plan-subtitle">Ideal para protección básica en la calle.</p>
-                
                 <ul class="plan-features">
                     <li><i class="fa-solid fa-check"></i> Placa física grabada en láser</li>
                     <li><i class="fa-solid fa-check"></i> Envío a domicilio incluido</li>
@@ -446,19 +162,14 @@
                     <li class="disabled"><i class="fa-solid fa-xmark"></i> Alertas de ubicación GPS</li>
                     <li class="disabled"><i class="fa-solid fa-xmark"></i> Notificaciones por WhatsApp</li>
                 </ul>
-
-                <a href="#" class="btn-checkout plan-basic-btn" data-plan="basico">
-                    Comprar Placa <i class="fa-solid fa-arrow-right"></i>
-                </a>
+                <button class="btn-checkout plan-basic-btn" data-plan="basico">Comprar Placa <i class="fa-solid fa-arrow-right"></i></button>
             </div>
 
-            <!-- PLAN GUARDIÁN (DESTACADO) -->
             <div class="price-card featured">
                 <div class="featured-badge">Más Recomendado</div>
                 <h3>Plan Guardián</h3>
                 <div class="price-amount">$39 <span>MXN</span> <small>/ mes</small></div>
                 <p class="plan-subtitle">Protección avanzada con alertas en tiempo real.</p>
-                
                 <ul class="plan-features">
                     <li><i class="fa-solid fa-check"></i> Todo lo del Plan Esencial</li>
                     <li><i class="fa-solid fa-check"></i> <strong>Alertas GPS instantáneas</strong> al mapa</li>
@@ -467,30 +178,178 @@
                     <li><i class="fa-solid fa-check"></i> Generador de cartel "Se Busca" en 1 clic</li>
                     <li><i class="fa-solid fa-check"></i> Soporte prioritario 24/7</li>
                 </ul>
-
-                <a href="#" class="btn-checkout plan-featured-btn" data-plan="guardian">
-                    Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i>
-                </a>
+                <button class="btn-checkout plan-featured-btn" data-plan="guardian">Proteger a mi mascota <i class="fa-solid fa-shield-dog"></i></button>
             </div>
         </div>
     </section>
 
-    <!-- LÓGICA DE CONEXIÓN A STRIPE VIA BACKEND -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="tab-login" onclick="cambiarTab('login')">Ingresar</button>
+                <button class="tab-btn" id="tab-registro" onclick="cambiarTab('registro')">Registrarse</button>
+            </div>
+
+            <form id="form-login" class="modal-form active" onsubmit="procesarAuth(event, 'login')">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-email" required placeholder="tu@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-form-submit">Entrar de Forma Segura</button>
+            </form>
+
+            <form id="form-registro" class="modal-form" onsubmit="procesarAuth(event, 'registro')">
+                <div class="form-group">
+                    <label>Tu Nombre Completo</label>
+                    <input type="text" id="reg-nombre" required placeholder="Ej. Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="reg-email" required placeholder="tu@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono Celular (Alertas)</label>
+                    <input type="text" id="reg-telefono" required placeholder="Ej. +52 81 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn-form-submit">Crear Cuenta y Continuar</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-    document.querySelectorAll('.btn-checkout').forEach(button => {
-        button.addEventListener('click', (e) => {
+        // Al cargar la página, verificamos si ya existe una sesión activa
+        window.addEventListener('DOMContentLoaded', () => {
+            verificarSesion();
+        });
+
+        function verificarSesion() {
+            const usuarioLogueado = localStorage.getItem('usuario_id');
+            if (usuarioLogueado) {
+                document.getElementById('btn-nav-auth').style.display = 'none';
+                document.getElementById('btn-nav-logout').style.display = 'inline-block';
+            } else {
+                document.getElementById('btn-nav-auth').style.display = 'inline-block';
+                document.getElementById('btn-nav-logout').style.display = 'none';
+            }
+        }
+
+        // Controladores de la Ventana Modal Visual
+        function abrirModal(tipo) {
+            document.getElementById('auth-modal').style.display = 'flex';
+            cambiarTab(tipo);
+        }
+
+        function cerrarModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        function cambiarTab(tipo) {
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegistro = document.getElementById('tab-registro');
+            const formLogin = document.getElementById('form-login');
+            const formRegistro = document.getElementById('form-registro');
+
+            if (tipo === 'login') {
+                tabLogin.classList.add('active');
+                tabRegistro.classList.remove('active');
+                formLogin.classList.add('active');
+                formRegistro.classList.remove('active');
+            } else {
+                tabRegistro.classList.add('active');
+                tabLogin.classList.remove('active');
+                formRegistro.classList.add('active');
+                formLogin.classList.remove('active');
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            alert("Has cerrado sesión.");
+            verificarSesion();
+        }
+
+        // LÓGICA DE CLIC EN LA TABLA DE PRECIOS
+        document.querySelectorAll('.btn-checkout').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const plan = e.target.closest('.btn-checkout').getAttribute('data-plan');
+                localStorage.setItem('plan_seleccionado', plan);
+                
+                // EVALUACIÓN CRÍTICA: ¿Tiene cuenta activa en este navegador?
+                if (localStorage.getItem('usuario_id')) {
+                    // Sí tiene sesión -> Lo mandamos directo al formulario de mascota
+                    window.location.href = 'registro.html';
+                } else {
+                    // No tiene sesión -> Abrimos la modal obligatoriamente en la pestaña de registro
+                    abrirModal('registro');
+                }
+            });
+        });
+
+        // PROCESAR AUTENTICACIÓN DIRECTA CON EL BACKEND (PETICIONES AJAX)
+        async function procesarAuth(e, tipo) {
             e.preventDefault();
             
-            // Detectamos qué plan seleccionó ('basico' o 'guardian')
-            const planSeleccionado = e.target.closest('.btn-checkout').getAttribute('data-plan');
-            
-            // Guardamos temporalmente la elección en el navegador del usuario
-            localStorage.setItem('plan_seleccionado', planSeleccionado);
-            
-            // Redireccionamos de inmediato a la página del formulario
-            window.location.href = 'registro.html';
-        });
-    });
-</script>
+            let url = (tipo === 'login') ? '/api/v1/auth/login' : '/api/v1/auth/registro';
+            let payload = {};
+
+            if (tipo === 'login') {
+                payload = {
+                    email: document.getElementById('login-email').value,
+                    password: document.getElementById('login-password').value
+                };
+            } else {
+                payload = {
+                    nombre: document.getElementById('reg-nombre').value,
+                    email: document.getElementById('reg-email').value,
+                    telefono: document.getElementById('reg-telefono').value,
+                    password: document.getElementById('reg-password').value
+                };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    // Guardamos permanentemente los datos del perfil de usuario en local
+                    localStorage.setItem('usuario_id', data.usuario.id);
+                    localStorage.setItem('usuario_email', data.usuario.email);
+                    localStorage.setItem('usuario_nombre', data.usuario.nombre);
+                    localStorage.setItem('usuario_telefono', data.usuario.telefono);
+
+                    cerrarModal();
+                    verificarSesion();
+
+                    // Si venía de elegir un paquete, lo mandamos directo a registrar su perro
+                    if(localStorage.getItem('plan_seleccionado')) {
+                        window.location.href = 'registro.html';
+                    } else {
+                        alert(`¡Bienvenido de vuelta, ${data.usuario.nombre}!`);
+                    }
+                } else {
+                    alert(data.error || 'Ocurrió un error en la autenticación.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('No se pudo establecer conexión con el sistema de autenticación.');
+            }
+        }
+    </script>
 </body>
 </html>
