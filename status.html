@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estatus de tu Pedido - SmartPet ID</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; padding: 40px 20px; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05); }
+        .success-icon { color: #4BB543; font-size: 60px; margin-bottom: 20px; }
+        h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 10px; }
+        p { color: #64748B; margin-bottom: 30px; font-size: 16px; line-height: 1.6; }
+        
+        /* Barra de Estatus Visual */
+        .status-tracker { display: flex; justify-content: space-between; position: relative; margin: 40px 0; padding: 0 10px; }
+        .status-tracker::before { content: ''; position: absolute; top: 20px; left: 0; width: 100%; height: 4px; background: #E2E8F0; z-index: 1; }
+        .status-step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 25%; }
+        .step-icon { width: 44px; height: 44px; border-radius: 50%; background: #E2E8F0; color: #64748B; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; border: 3px solid white; transition: all 0.3s ease; }
+        .step-text { font-size: 13px; font-weight: 700; color: #94A3B8; }
+        
+        /* Estados Activos (Por defecto marcamos el primero pagado) */
+        .status-step.active .step-icon { background: #E7717D; color: white; box-shadow: 0 0 0 4px rgba(231, 113, 125, 0.2); }
+        .status-step.active .step-text { color: #2E4D68; }
+        
+        .btn-home { display: inline-block; background-color: #2E4D68; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; margin-top: 20px; box-shadow: 0 4px 14px rgba(46, 77, 104, 0.2); }
+        .btn-home:hover { background-color: #1e3347; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h2>¡Pago procesado con éxito!</h2>
+        <p>¡Muchas gracias por tu compra! El perfil digital ya quedó enlazado. Tu placa física acaba de entrar a nuestra línea de producción automática.</p>
+
+        <div class="status-tracker">
+            <div class="status-step active">
+                <div class="step-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="step-text">Pagado</div>
+            </div>
+            <div class="status-step">
+                <div class="step-icon"><i class="fa-solid fa-hammer"></i></div>
+                <div class="step-text">En producción</div>
+            </div>
+            <div class="status-step">
+                <div class="step-icon"><i class="fa-solid fa-truck"></i></div>
+                <div class="step-text">Enviado</div>
+            </div>
+            <div class="status-step">
+                <div class="step-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                <div class="step-text">Entregado</div>
+            </div>
+        </div>
+
+        <p style="font-size: 14px; font-style: italic;">Te enviaremos un correo electrónico de confirmación con los detalles y tu número de guía en cuanto el paquete sea recolectado por la mensajería.</p>
+
+        <a href="index.html" class="btn-home"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+    </div>
+
+</body>
+</html>
