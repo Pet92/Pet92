@@ -12,70 +12,13 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Middlewares
+// Middlewares básicos
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Sirve index.html y registro.html de forma automática
-
-
+app.use(express.static(__dirname)); // Sirve index.html, registro.html, dashboard.html y status.html
 
 // ============================================================
-// NUEVOS ENDPOINTS: SISTEMA DE USUARIOS Y AUTENTICACIÓN
-// ============================================================
-
-// 1. REGISTRO DE NUEVAS CUENTAS DESDE LA MODAL
-app.post('/api/v1/auth/registro', async (req, res) => {
-    const { nombre, email, telefono, password } = req.body;
-    try {
-        // Verificamos si el correo ya existe en el sistema
-        const existeUser = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
-        if (existeUser.rows.length > 0) {
-            return res.status(400).json({ success: false, error: 'El correo electrónico ya se encuentra registrado.' });
-        }
-        // Insertamos el nuevo usuario dueño en la base de datos
-        // NOTA: Para producción real se recomienda usar criptografía como bcrypt en lugar de texto plano
-        const nuevoUser = await pool.query(
-            `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
-             VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, telefono_contacto`,
-            [nombre, email, password, telefono]
-        );
-        const usuario = nuevoUser.rows[0];
-        res.json({
-            success: true,
-            usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto }
-        });
-    } catch (error) {
-        console.error("Error en registro:", error);
-        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
-    }
-});
-// 2. INICIO DE SESIÓN DE CUENTAS EXISTENTES
-app.post('/api/v1/auth/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const queryUser = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-        if (queryUser.rows.length === 0) {
-            return res.status(400).json({ success: false, error: 'Las credenciales ingresadas no coinciden.' });
-        }
-        const usuario = queryUser.rows[0];
-        // Validamos la contraseña
-        if (usuario.password_hash !== password) {
-            return res.status(400).json({ success: false, error: 'Contraseña incorrecta.' });
-        }
-        res.json({
-            success: true,
-            usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto }
-        });
-    } catch (error) {
-        console.error("Error en login:", error);
-        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
-    }
-});
-
-
-
-// ============================================================
-// ¡SINTAXIS BLINDADA! Inicialización limpia de tablas
+// INICIALIZACIÓN AUTOMÁTICA DE LA BASE DE DATOS (CON TIPO_PLAN)
 // ============================================================
 async function inicializarBaseDeDatos() {
     const scriptSQL = `
@@ -99,6 +42,7 @@ async function inicializarBaseDeDatos() {
             contacto_alternativo VARCHAR(20),
             notas_medicas TEXT,
             estado VARCHAR(20) DEFAULT 'Pendiente de Pago',
+            tipo_plan VARCHAR(20) DEFAULT 'basico', -- 'basico' o 'guardian'
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
         );
@@ -124,81 +68,139 @@ async function inicializarBaseDeDatos() {
             FOREIGN KEY (placa_id) REFERENCES placas(id) ON DELETE CASCADE
         );
 
-        -- Creación del índice corregido para búsquedas ultra rápidas
         CREATE INDEX IF NOT EXISTS idx_placas_codigo ON placas(codigo_qr_unico);
     `;
 
     try {
-        console.log('Estructurando tablas e índices en PostgreSQL...');
+        console.log('Estructurando tablas en PostgreSQL...');
         await pool.query(scriptSQL);
-        console.log('¡Base de datos SmartPet ID inicializada con éxito en la nube!');
+        console.log('¡Base de datos SmartPet ID inicializada con éxito!');
     } catch (error) {
         console.error('Error crítico al estructurar la base de datos:', error);
     }
 }
 
 // ============================================================
-// ENDPOINT: REGISTRAR ANTES DE MANDAR A STRIPE
+// ENDPOINTS: SISTEMA DE USUARIOS Y AUTENTICACIÓN
+// ============================================================
+app.post('/api/v1/auth/registro', async (req, res) => {
+    const { nombre, email, telefono, password } = req.body;
+    try {
+        const existeUser = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
+        if (existeUser.rows.length > 0) {
+            return res.status(400).json({ success: false, error: 'El correo ya está registrado.' });
+        }
+        const nuevoUser = await pool.query(
+            `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
+             VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, telefono_contacto`,
+            [nombre, email, password, telefono]
+        );
+        res.json({ success: true, usuario: { id: nuevoUser.rows[0].id, nombre: nuevoUser.rows[0].nombre, email: nuevoUser.rows[0].email, telefono: nuevoUser.rows[0].telefono_contacto } });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
+    }
+});
+
+app.post('/api/v1/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const queryUser = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+        if (queryUser.rows.length === 0 || queryUser.rows[0].password_hash !== password) {
+            return res.status(400).json({ success: false, error: 'Credenciales incorrectas.' });
+        }
+        const usuario = queryUser.rows[0];
+        res.json({ success: true, usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, telefono: usuario.telefono_contacto } });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error interno en el servidor.' });
+    }
+});
+
+// ============================================================
+// ENDPOINT: REGISTRAR ANTES DE MANDAR A STRIPE (INCLUYE TIPO_PLAN)
 // ============================================================
 app.post('/api/v1/registrar-pre-pago', async (req, res) => {
     const { nombre_mascota, especie, raza, foto_url, notas_medicas, contacto_alternativo, plan, email_dueno, nombre_dueno, telefono_dueno } = req.body;
 
     try {
-        // 1. Validar e insertar al usuario dueño
         let userQuery = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email_dueno]);
-        let usuarioId;
+        let usuarioId = userQuery.rows.length > 0 ? userQuery.rows[0].id : null;
 
-        if (userQuery.rows.length === 0) {
+        if (!usuarioId) {
             const nuevoUser = await pool.query(
                 `INSERT INTO usuarios (nombre, email, password_hash, telefono_contacto) 
                  VALUES ($1, $2, $3, $4) RETURNING id`,
                 [nombre_dueno || 'Cliente Temporal', email_dueno, 'temp_hash_123', telefono_dueno || '0000000']
             );
             usuarioId = nuevoUser.rows[0].id;
-        } else {
-            usuarioId = userQuery.rows[0].id;
         }
 
-        // 2. Insertar los datos de la mascota enlazando al usuario
-        // 2. Insertar los datos de la mascota enlazando al usuario
+        // Guardamos la mascota inyectando el plan seleccionado
         const mascotaQuery = await pool.query(
-            `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, estado) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-            [usuarioId, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, 'Pendiente de Pago']
+            `INSERT INTO mascotas (usuario_id, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, estado, tipo_plan) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+            [usuarioId, nombre_mascota, foto_url, especie, raza, contacto_alternativo, notas_medicas, 'Pendiente de Pago', plan]
         );
         const mascotaId = mascotaQuery.rows[0].id;
 
-        // 3. Resolver precio e intenciones de Stripe
         let priceId = (plan === 'guardian') ? process.env.STRIPE_PRICE_GUARDIAN : process.env.STRIPE_PRICE_BASICO;
         let modeType = (plan === 'guardian') ? 'subscription' : 'payment';
 
-        // 4. Construir la pasarela mandando el id de la mascota en metadatos ocultos
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             customer_email: email_dueno,
             line_items: [{ price: priceId, quantity: 1 }],
             mode: modeType,
             shipping_address_collection: { allowed_countries: ['MX', 'US'] },
-            metadata: {
-                mascota_id: mascotaId.toString(),
-                plan_tipo: plan
-            },
+            metadata: { mascota_id: mascotaId.toString(), plan_tipo: plan },
             success_url: `${req.headers.origin}/status.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${req.headers.origin}/index.html`,
         });
 
         res.json({ url: session.url });
     } catch (error) {
-        console.error("Error en endpoint pre-pago:", error);
+        console.error(error);
         res.status(500).json({ error: 'No se pudo registrar la información previa.' });
     }
 });
 
-// Webhook para la confirmación del pago
+// ============================================================
+// ENDPOINT CONCENTRADOR PARA EL DASHBOARD DEL USUARIO
+// ============================================================
+app.get('/api/v1/dashboard/datos', async (req, res) => {
+    const { usuario_id } = req.query;
+    if(!usuario_id) return res.status(400).json({ success: false, error: 'ID requerido.' });
+
+    try {
+        const mascotas = await pool.query(
+            `SELECT id, nombre_mascota, especie, raza, foto_url, estado, tipo_plan 
+             FROM mascotas WHERE usuario_id = $1 ORDER BY id DESC`, [usuario_id]
+        );
+
+        const escaneos = await pool.query(
+            `SELECT h.fecha_escaneo, h.latitud, h.longitud, m.nombre_mascota 
+             FROM historial_escaneos h
+             JOIN placas p ON h.placa_id = p.id
+             JOIN mascotas m ON p.mascota_id = m.id
+             WHERE m.usuario_id = $1 ORDER BY h.fecha_escaneo DESC`, [usuario_id]
+        );
+
+        const plates = await pool.query(
+            `SELECT p.codigo_qr_unico, p.estado_pedido, m.nombre_mascota 
+             FROM placas p
+             LEFT JOIN mascotas m ON p.mascota_id = m.id
+             WHERE m.usuario_id = $1 OR p.mascota_id IS NULL ORDER BY p.id DESC`, [usuario_id]
+        );
+
+        res.json({ success: true, mascotas: mascotas.rows, escaneos: escaneos.rows, placas: plates.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error en base de datos.' });
+    }
+});
+
+// WEBHOOK DE CONFIRMACIÓN DE STRIPE
 app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
-
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err) {
@@ -214,77 +216,20 @@ app.post('/api/v1/webhook-stripe', express.raw({ type: 'application/json' }), as
         try {
             await pool.query("UPDATE mascotas SET estado = 'Seguro' WHERE id = $1", [mascotaId]);
             const codigoQR = `qr_${Math.random().toString(36).substring(2, 9)}`;
-            
             await pool.query(
                 `INSERT INTO placas (mascota_id, codigo_qr_unico, url_completa, estado_pedido) 
-                 VALUES ($1, $2, $3, $4)`,
-                [mascotaId, codigoQR, `https://pet92.onrender.com/rescuer.html?code=${codigoQR}`, 'pagado']
+                 VALUES ($1, $2, $3, $4)`, [mascotaId, codigoQR, `https://pet92.onrender.com/rescuer.html?code=${codigoQR}`, 'pagado']
             );
-            console.log(`¡Pago completado! Mascota ${mascotaId} activada. Enviar a: ${direccion}`);
+            console.log(`¡Pago Exitoso! Mascota ${mascotaId} activa. Enviar a: ${direccion}`);
         } catch (dbErr) {
-            console.error("Error en Webhook BD:", dbErr);
+            console.error(dbErr);
         }
     }
     res.json({ received: true });
 });
 
-
-// ============================================================
-// ENDPOINT CONCENTRADOR PARA EL DASHBOARD DEL USUARIO
-// ============================================================
-app.get('/api/v1/dashboard/datos', async (req, res) => {
-    const { usuario_id } = req.query; // Recibe el ID del usuario logueado
-
-    if(!usuario_id) {
-        return res.status(400).json({ success: false, error: 'Se requiere la ID del usuario.' });
-    }
-
-    try {
-        // 1. Obtener todas las mascotas del usuario
-        const mascotas = await pool.query(
-            `SELECT id, nombre_mascota, especie, raza, foto_url, estado 
-             FROM mascotas WHERE usuario_id = $1 ORDER BY id DESC`, 
-            [usuario_id]
-        );
-
-        // 2. Obtener todas las alertas de escaneo con ubicación GPS de sus mascotas
-        const escaneos = await pool.query(
-            `SELECT h.fecha_escaneo, h.latitud, h.longitud, m.nombre_mascota 
-             FROM historial_escaneos h
-             JOIN placas p ON h.placa_id = p.id
-             JOIN mascotas m ON p.mascota_id = m.id
-             WHERE m.usuario_id = $1 ORDER BY h.fecha_escaneo DESC`, 
-            [usuario_id]
-        );
-
-        // 3. Obtener el estatus de las guías de envío de sus placas compradas
-        const placas = await pool.query(
-            `SELECT p.codigo_qr_unico, p.estado_pedido, m.nombre_mascota 
-             FROM placas p
-             LEFT JOIN mascotas m ON p.mascota_id = m.id
-             WHERE m.usuario_id = $1 OR p.mascota_id IS NULL ORDER BY p.id DESC`, 
-            [usuario_id]
-        );
-
-        // Devolvemos todo el paquete estructurado al frontend
-        res.json({
-            success: true,
-            mascotas: 一般 = mascotas.rows,
-            escaneos: escaneos.rows,
-            placas: placas.rows
-        });
-
-    } catch (error) {
-        console.error("Error al recopilar datos del Dashboard:", error);
-        res.status(500).json({ success: false, error: 'Error interno al consultar la base de datos.' });
-    }
-});
-
-
-
 // Encendido global
 app.listen(PORT, async () => {
-    console.log(`Servidor SmartPet ID corriendo en el puerto ${PORT}`);
-    // Al arrancar, creará todas las tablas limpias de golpe
+    console.log(`Servidor activo en puerto ${PORT}`);
     await inicializarBaseDeDatos();
 });

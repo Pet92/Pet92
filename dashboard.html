@@ -22,7 +22,6 @@
         .welcome-box { margin-bottom: 30px; text-align: left; }
         .welcome-box h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 28px; }
         
-        /* Sistema de Pestañas del Panel */
         .tabs-menu { display: flex; gap: 15px; border-bottom: 2px solid #E2E8F0; margin-bottom: 30px; }
         .tab-link { padding: 14px 24px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; background: none; cursor: pointer; color: #94A3B8; border-bottom: 3px solid transparent; }
         .tab-link.active { color: #E7717D; border-bottom-color: #E7717D; }
@@ -30,23 +29,20 @@
         .tab-content { display: none; background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(46,77,104,0.04); min-height: 200px; }
         .tab-content.active { display: block; }
 
-        /* Estilos de Tarjetas de Mascotas */
         .grid-mascotas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-        .mascota-card { border: 2px solid #F1F5F9; border-radius: 14px; padding: 20px; text-align: center; background: #FFF; position: relative; }
+        .mascota-card { border: 2px solid #F1F5F9; border-radius: 14px; padding: 20px; text-align: center; background: #FFF; }
         .mascota-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid #D1E8E2; }
         .mascota-card h4 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 18px; }
         .mascota-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; margin-top: 5px; background: #D1E8E2; color: #2E4D68; }
-        .btn-edit-pet { display: block; width: 100%; margin-top: 15px; padding: 10px; background: #F1F5F9; border: none; border-radius: 6px; font-weight: 700; color: #2E4D68; cursor: pointer; text-decoration: none; font-size: 14px; text-align: center; }
+        .btn-edit-pet { display: block; width: 100%; margin-top: 15px; padding: 10px; background: #F1F5F9; border: none; border-radius: 6px; font-weight: 700; color: #2E4D68; text-decoration: none; font-size: 14px; text-align: center; }
 
-        /* Estilos de Alertas e Historial */
         .alert-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #F1F5F9; text-align: left; }
-        .alert-item:last-child { border-bottom: none; }
         .alert-info h5 { font-family: 'Poppins', sans-serif; color: #2E4D68; font-size: 15px; }
         .alert-info p { font-size: 13px; color: #94A3B8; }
-        .btn-mapa { background: #E7717D; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .btn-mapa { background: #E7717D; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; }
 
-        .empty-state { text-align: center; padding: 40px 0; color: #94A3B8; }
-        .empty-state i { font-size: 48px; margin-bottom: 15px; display: block; }
+        .empty-state { text-align: center; padding: 50px 20px; color: #94A3B8; }
+        .empty-state i { font-size: 50px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
@@ -59,7 +55,7 @@
     <main class="dashboard-container">
         <div class="welcome-box">
             <h2>¡Hola, <span id="user-name">Dueño</span>!</h2>
-            <p>Administra las placas y perfiles de protección de tus compañeros de cuatro patas.</p>
+            <p>Administra las placas y perfiles de protección de tus mascotas.</p>
         </div>
 
         <div class="tabs-menu">
@@ -69,69 +65,95 @@
         </div>
 
         <div id="panel-mascotas" class="tab-content active">
-            <div class="grid-mascotas" id="container-mascotas">
-                </div>
+            <div class="grid-mascotas" id="container-mascotas"></div>
         </div>
 
         <div id="panel-alertas" class="tab-content">
-            <div id="container-alertas">
-                </div>
+            <div id="container-alertas"></div>
         </div>
 
         <div id="panel-pedidos" class="tab-content">
-            <div id="container-pedidos">
-                </div>
+            <div id="container-pedidos"></div>
         </div>
     </main>
 
     <script>
-        // Bloqueo de Seguridad: Si no hay sesión iniciada, rebota al index
         if (!localStorage.getItem('usuario_id')) {
             window.location.href = 'index.html';
         }
 
         document.getElementById('user-name').innerText = localStorage.getItem('usuario_nombre');
+        
+        // Almacenamiento global de las mascotas para verificar suscripción en tiempo real
+        let mascotasUsuario = []; 
+        let registrosEscaneos = [];
 
-        // Función para alternar pestañas
         function switchTab(e, tabId) {
             document.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
             e.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const contenidoTab = document.getElementById(tabId);
+            contenidoTab.classList.add('active');
+
+            // CONDICIÓN CRÍTICA DE PLANES (PAYWALL)
+            if (tabId === 'panel-alertas') {
+                // Evaluamos si el usuario posee contratado el plan guardian en al menos una mascota
+                const tienePlanGuardian = mascotasUsuario.some(pet => pet.tipo_plan === 'guardian');
+                
+                if (!tienePlanGuardian) {
+                    contenidoTab.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-lock" style="color: #E7717D; font-size: 54px;"></i>
+                            <h3 style="font-family: 'Poppins', sans-serif; color: #2E4D68; margin-top: 15px;">Función Exclusiva del Plan Guardián</h3>
+                            <p style="margin: 15px auto 25px auto; max-width: 450px;">
+                                El Plan Esencial únicamente incluye tu perfil digital básico. Para acceder a las alertas GPS en tiempo real con mapas interactivos de escaneo, actualiza tu cuenta.
+                            </p>
+                            <a href="index.html#precios" class="btn-mapa">
+                                <i class="fa-solid fa-rocket"></i> Mejorar a Plan Guardián ($39/mes)
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    // Si es premium, pintamos el historial con normalidad
+                    renderAlertas(registrosEscaneos);
+                }
+            }
         }
 
-        // PETICIÓN COMPLETA: Solicitar los datos reales al Backend
         async function cargarDatosPanel() {
             const userId = localStorage.getItem('usuario_id');
-            
             try {
                 const response = await fetch(`/api/v1/dashboard/datos?usuario_id=${userId}`);
                 const data = await response.json();
 
                 if (data.success) {
+                    mascotasUsuario = data.mascotas;
+                    registrosEscaneos = data.escaneos;
+                    
                     renderMascotas(data.mascotas);
-                    renderAlertas(data.escaneos);
                     renderPedidos(data.placas);
                 }
             } catch (error) {
-                console.error("Error al poblar el panel:", error);
+                console.error(error);
             }
         }
 
         function renderMascotas(lista) {
             const container = document.getElementById('container-mascotas');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-shield-cat"></i>Aún no tienes mascotas registradas. Compra un plan para activar una.</div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-shield-cat"></i>No tienes mascotas registradas aún.</div>`;
                 return;
             }
             container.innerHTML = lista.map(pet => `
                 <div class="mascota-card">
-                    <img src="${pet.foto_url || 'https://via.placeholder.com/150'}" class="mascota-avatar" alt="Avatar">
+                    <img src="${pet.foto_url || 'https://via.placeholder.com/150'}" class="mascota-avatar">
                     <h4>${pet.nombre_mascota}</h4>
-                    <span class="mascota-badge">${pet.especie} (${pet.raza || 'Mestizo'})</span>
-                    <p style="font-size: 13px; margin-top:8px; color:#64748B;">Estatus: <strong>${pet.estado}</strong></p>
-                    <a href="registro.html?edit_id=${pet.id}" class="btn-edit-pet"><i class="fa-solid fa-pen-to-square"></i> Editar Perfil</a>
+                    <span class="mascota-badge">${pet.especie}</span>
+                    <p style="font-size: 13px; margin-top:10px; color:#64748B;">
+                        Protección: <strong style="color: ${pet.tipo_plan === 'guardian' ? '#E7717D' : '#2E4D68'};">${pet.tipo_plan === 'guardian' ? 'Plan Guardián 🌟' : 'Esencial (Placa)'}</strong>
+                    </p>
+                    <a href="registro.html?edit_id=${pet.id}" class="btn-edit-pet"><i class="fa-solid fa-pen-to-square"></i> Editar Datos</a>
                 </div>
             `).join('');
         }
@@ -139,17 +161,17 @@
         function renderAlertas(lista) {
             const container = document.getElementById('container-alertas');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map-location-dot"></i>No hay escaneos registrados. Tu mascota está a salvo.</div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-map-location-dot"></i>No se registran escaneos. Tu compañero está a salvo.</div>`;
                 return;
             }
             container.innerHTML = lista.map(esc => `
                 <div class="alert-item">
                     <div class="alert-info">
-                        <h5>¡Escaneo Detectado en la placa de ${esc.nombre_mascota}!</h5>
+                        <h5>¡Escaneo en la placa de ${esc.nombre_mascota}!</h5>
                         <p><i class="fa-solid fa-clock"></i> ${new Date(esc.fecha_escaneo).toLocaleString()}</p>
                     </div>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa">
-                        <i class="fa-solid fa-map"></i> Ubicar en Mapa
+                    <a href="https://maps.google.com/?q=${esc.latitud},${esc.longitud}" target="_blank" class="btn-mapa">
+                        <i class="fa-solid fa-map"></i> Ver en Google Maps
                     </a>
                 </div>
             `).join('');
@@ -158,23 +180,22 @@
         function renderPedidos(lista) {
             const container = document.getElementById('container-pedidos');
             if(lista.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay órdenes de envío activas en este momento.</div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box"></i>No hay guías ni envíos pendientes.</div>`;
                 return;
             }
             container.innerHTML = lista.map(pl => `
                 <div class="alert-item">
                     <div class="alert-info">
-                        <h5>Placa Grabada QR: <code>${pl.codigo_qr_unico}</code></h5>
-                        <p>Asignada a: <strong>${pl.nombre_mascota || 'Sin asignar'}</strong></p>
+                        <h5>Placa Código: <code>${pl.codigo_qr_unico}</code></h5>
+                        <p>Asignada a: <strong>${pl.nombre_mascota || 'En proceso'}</strong></p>
                     </div>
                     <span class="mascota-badge" style="background:#E2E8F0; color:#2E4D68; text-transform:uppercase;">
-                        Status: ${pl.estado_pedido}
+                        ${pl.estado_pedido}
                     </span>
                 </div>
             `).join('');
         }
 
-        // Carga inicial al abrir la pantalla
         window.addEventListener('DOMContentLoaded', cargarDatosPanel);
     </script>
 </body>
