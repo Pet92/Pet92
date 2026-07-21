@@ -1,160 +1,235 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet92 - Panel Principal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-slate-100 min-h-screen flex flex-col">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configura tu Pet92 - Datos de tu Mascota</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <nav class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <a href="dashboard.html" class="flex items-center gap-2 font-bold text-2xl text-indigo-600">
-        <i class="fa-solid fa-paw"></i>
-        <span>Pet92</span>
-      </a>
-      
-      <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-700" id="userGreeting">Hola, Dueño</span>
-        <button onclick="cerrarSesion()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-3 py-1.5 rounded-lg transition">
-          <i class="fa-solid fa-right-from-bracket"></i> Salir
-        </button>
-      </div>
-    </div>
-  </nav>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: #FFFBF1; color: #475569; }
 
-  <div class="max-w-6xl mx-auto w-full flex-grow p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+        /* Navbar Corporativo Pet92 */
+        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 30px; }
+        .logo { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; color: #2E4D68; text-decoration: none; }
+        .logo span { color: #E7717D; }
+        .btn-back-home { color: #64748B; text-decoration: none; font-weight: 700; font-size: 15px; }
 
-    <aside class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 h-fit space-y-2">
-      <button onclick="cambiarSeccion('mascotas')" id="btnTabMascotas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-indigo-600 bg-indigo-50 transition">
-        <i class="fa-solid fa-dog text-lg"></i> Mis Mascotas
-      </button>
-      <button onclick="cambiarSeccion('placas')" id="btnTabPlacas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
-        <i class="fa-solid fa-qrcode text-lg"></i> Mis Placas QR
-      </button>
-      <button onclick="cambiarSeccion('pedidos')" id="btnTabPedidos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
-        <i class="fa-solid fa-cart-shopping text-lg"></i> Pedidos y Compras
-      </button>
-      <button onclick="cambiarSeccion('perfil')" id="btnTabPerfil" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
-        <i class="fa-solid fa-user text-lg"></i> Mi Perfil
-      </button>
-    </aside>
-
-    <main class="md:col-span-3 space-y-6">
-
-      <section id="secMascotas" class="block">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-bold text-slate-800">Mis Mascotas Registradas</h2>
-          <a href="registro.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition shadow-sm flex items-center gap-2">
-            <i class="fa-solid fa-plus"></i> Agregar Mascota
-          </a>
-        </div>
-
-        <div id="gridMascotas" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          </div>
-      </section>
-
-      <section id="secPlacas" class="hidden bg-white p-6 rounded-2xl border border-slate-200">
-        <h2 class="text-xl font-bold text-slate-800 mb-4">Placas Vinculadas</h2>
-        <p class="text-slate-500 text-sm">Aquí puedes escanear o administrar el código QR asociado a tus mascotas.</p>
-        <div class="mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-700 text-sm flex items-center gap-3">
-          <i class="fa-solid fa-circle-info text-xl"></i>
-          <span>Todas tus placas están activas y transmitiendo la información médica de contacto.</span>
-        </div>
-      </section>
-
-      <section id="secPedidos" class="hidden bg-white p-6 rounded-2xl border border-slate-200">
-        <h2 class="text-xl font-bold text-slate-800 mb-4">Historial de Pedidos</h2>
-        <p class="text-slate-500 text-sm">Próximamente podrás consultar tus guías de envío y recibos de compra.</p>
-      </section>
-
-      <section id="secPerfil" class="hidden bg-white p-6 rounded-2xl border border-slate-200">
-        <h2 class="text-xl font-bold text-slate-800 mb-4">Datos del Usuario</h2>
-        <div class="space-y-3 max-w-md">
-          <div>
-            <label class="text-xs text-slate-400 font-semibold uppercase">Nombre</label>
-            <p id="perfilNombre" class="text-slate-800 font-medium">Usuario Pet92</p>
-          </div>
-          <div>
-            <label class="text-xs text-slate-400 font-semibold uppercase">Estado de la cuenta</label>
-            <p class="text-green-600 font-semibold text-sm">Activa / Cliente Registrado</p>
-          </div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // 1. Cargar nombre de usuario registrado o por defecto
-      const usuarioNombre = localStorage.getItem('pet92_usuario_nombre') || 'Usuario';
-      const userGreeting = document.getElementById('userGreeting');
-      const perfilNombre = document.getElementById('perfilNombre');
-      
-      if(userGreeting) userGreeting.textContent = `Hola, ${usuarioNombre}`;
-      if(perfilNombre) perfilNombre.textContent = usuarioNombre;
-
-      // 2. Cargar y mostrar la lista de mascotas guardadas
-      cargarMascotas();
-    });
-
-    function cargarMascotas() {
-      const grid = document.getElementById('gridMascotas');
-      const mascotas = JSON.parse(localStorage.getItem('pet92_mascotas')) || [];
-
-      if (mascotas.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-2 bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center">
-            <i class="fa-solid fa-paw text-4xl text-slate-300 mb-3"></i>
-            <h3 class="font-bold text-slate-700">Aún no has registrado ninguna mascota</h3>
-            <p class="text-slate-400 text-sm mb-4">Haz clic en el botón de arriba para registrar tu primera placa Pet92.</p>
-            <a href="registro.html" class="inline-block bg-indigo-50 text-indigo-600 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-indigo-100 transition">
-              Registrar Mascota
-            </a>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = mascotas.map(pet => `
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition">
-          <img src="${pet.foto}" alt="${pet.nombre}" class="w-20 h-20 object-cover rounded-xl border-2 border-indigo-100">
-          <div class="flex-grow">
-            <h3 class="font-bold text-lg text-slate-800">${pet.nombre}</h3>
-            <p class="text-xs text-slate-500 font-medium">${pet.especie} - ${pet.raza}</p>
-            <p class="text-xs text-indigo-600 font-semibold mt-1">
-              <i class="fa-solid fa-phone"></i> ${pet.telefono}
-            </p>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Navegación entre pestañas activas del Dashboard
-    function cambiarSeccion(seccion) {
-      const secciones = ['mascotas', 'placas', 'pedidos', 'perfil'];
-      secciones.forEach(sec => {
-        const elemSec = document.getElementById('sec' + sec.charAt(0).toUpperCase() + sec.slice(1));
-        const elemBtn = document.getElementById('btnTab' + sec.charAt(0).toUpperCase() + sec.slice(1));
-
-        if (sec === seccion) {
-          elemSec.classList.remove('hidden');
-          elemBtn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-indigo-600 bg-indigo-50 transition";
-        } else {
-          elemSec.classList.add('hidden');
-          elemBtn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold text-slate-600 hover:bg-slate-50 transition";
+        .container { max-width: 600px; margin: 0 auto 40px auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(46, 77, 104, 0.05); }
+        h2 { font-family: 'Poppins', sans-serif; color: #2E4D68; margin-bottom: 10px; text-align: center; }
+        .subtitle { color: #64748B; margin-bottom: 30px; text-align: center; }
+        form { text-align: left; }
+        .form-group { margin-bottom: 20px; }
+        .section-title { font-family: 'Poppins', sans-serif; font-size: 18px; color: #E7717D; margin: 25px 0 15px 0; border-bottom: 1px solid #E2E8F0; padding-bottom: 5px; }
+        label { display: block; font-weight: 700; color: #2E4D68; margin-bottom: 8px; }
+        input[type="text"], input[type="email"], textarea, select {
+            width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 16px; font-family: 'Lato', sans-serif; outline: none;
         }
-      });
-    }
+        input:focus, textarea:focus { border-color: #D1E8E2; }
+        .btn-upload {
+            display: inline-block; background-color: #D1E8E2; color: #2E4D68; padding: 12px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; margin-bottom: 15px; font-family: 'Poppins', sans-serif;
+        }
+        #preview-foto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: none; margin: 10px 0; border: 3px solid #E2E8F0; }
+        .btn-submit {
+            display: block; width: 100%; background-color: #E7717D; color: white; padding: 16px; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 30px; box-shadow: 0 4px 14px rgba(231, 113, 125, 0.3);
+        }
+        .btn-submit:hover { background-color: #d65d69; }
+        .status-msg { font-size: 13px; color: #2E4D68; margin-top: 5px; font-weight: 600; }
+    </style>
+</head>
+<body>
 
-    function cerrarSesion() {
-      if(confirm('¿Deseas cerrar sesión?')) {
-        window.location.href = 'index.html';
-      }
-    }
-  </script>
+    <header class="navbar">
+        <a href="index.html" class="logo">Pet<span>92</span></a>
+        <a href="index.html" class="btn-back-home"><i class="fa-solid fa-house"></i> Volver a Inicio</a>
+    </header>
+
+    <div class="container">
+        <h2>Paso 1: Crea el perfil de tu mascota</h2>
+        <p class="subtitle">Ingresa sus datos primero. En el siguiente paso procederemos de forma segura al empaque y pago de su placa física.</p>
+
+        <form id="form-registro-completo">
+            <div class="section-title">Datos del Dueño</div>
+            <div class="form-group">
+                <label>Tu Nombre Completo *</label>
+                <input type="text" id="nombre_dueno" required placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico *</label>
+                <input type="email" id="email_dueno" required placeholder="ejemplo@correo.com">
+            </div>
+            <div class="form-group">
+                <label>Teléfono Celular (Principal para alertas) *</label>
+                <input type="text" id="telefono_dueno" required placeholder="Ej. +52 81 1234 5678">
+            </div>
+
+            <div class="section-title">Información de tu Mascota</div>
+            <div class="form-group">
+                <label>Nombre de la Mascota *</label>
+                <input type="text" id="nombre_mascota" required placeholder="Ej. Max, Camila...">
+            </div>
+            <div class="form-group">
+                <label>Especie *</label>
+                <select id="especie" required>
+                    <option value="Perro">Perro</option>
+                    <option value="Gato">Gato</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Raza</label>
+                <input type="text" id="raza" placeholder="Ej. Schnauzer, Mestizo...">
+            </div>
+
+            <div class="form-group">
+                <label>Foto identificadora *</label>
+                <input type="file" id="input-foto-file" accept="image/*" style="display: none;">
+                <button type="button" id="upload-widget-btn" class="btn-upload">
+                    <i class="fa-solid fa-camera"></i> Seleccionar Foto de tu Peludo
+                </button>
+                <div id="status-upload" class="status-msg"></div>
+                <br>
+                <img id="preview-foto" src="" alt="Vista previa">
+                <input type="hidden" id="foto-url">
+            </div>
+
+            <div class="form-group">
+                <label>Notas Médicas o Alergias Importantes</label>
+                <textarea id="notas" rows="3" placeholder="Ej. Requiere medicamentos diarios / Es muy temeroso..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Teléfono de Respaldo / Alternativo</label>
+                <input type="text" id="contacto-alt" placeholder="Ej. Teléfono de un familiar">
+            </div>
+
+            <button type="submit" class="btn-submit" id="submit-btn">Continuar al Pago Seguro <i class="fa-solid fa-credit-card"></i></button>
+        </form>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE TU CLOUDINARY
+        const CLOUD_NAME = "TU_CLOUD_NAME"; 
+        const UPLOAD_PRESET = "TU_UPLOAD_PRESET"; 
+
+        // Pre-llenar datos del usuario logueado
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('usuario_nombre')) {
+                document.getElementById('nombre_dueno').value = localStorage.getItem('usuario_nombre');
+            }
+            if (localStorage.getItem('usuario_email')) {
+                document.getElementById('email_dueno').value = localStorage.getItem('usuario_email');
+            }
+            if (localStorage.getItem('usuario_telefono')) {
+                document.getElementById('telefono_dueno').value = localStorage.getItem('usuario_telefono');
+            }
+        });
+
+        const uploadBtn = document.getElementById("upload-widget-btn");
+        const fileInput = document.getElementById("input-foto-file");
+        const imgPreview = document.getElementById("preview-foto");
+        const fotoUrlInput = document.getElementById("foto-url");
+        const statusMsg = document.getElementById("status-upload");
+
+        uploadBtn.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 1. Mostrar vista previa local instantánea
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                imgPreview.src = evt.target.result;
+                imgPreview.style.display = "inline-block";
+            };
+            reader.readAsDataURL(file);
+
+            // 2. Subida a Cloudinary
+            if (CLOUD_NAME !== "TU_CLOUD_NAME" && UPLOAD_PRESET !== "TU_UPLOAD_PRESET") {
+                statusMsg.innerText = "Subiendo foto a la nube...";
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", UPLOAD_PRESET);
+
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.secure_url) {
+                        fotoUrlInput.value = data.secure_url;
+                        statusMsg.innerText = "¡Foto subida correctamente!";
+                    } else {
+                        fotoUrlInput.value = imgPreview.src;
+                        statusMsg.innerText = "Foto lista para el registro.";
+                    }
+                } catch (err) {
+                    fotoUrlInput.value = imgPreview.src;
+                    statusMsg.innerText = "Foto lista para el registro.";
+                }
+            } else {
+                // Imagen por defecto en caso de no tener las llaves configuradas aún
+                fotoUrlInput.value = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400";
+                statusMsg.innerText = "Foto cargada para prueba.";
+            }
+        });
+
+        // ENVÍO DEL FORMULARIO
+        document.getElementById('form-registro-completo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let fotoUrl = document.getElementById('foto-url').value;
+            if(!fotoUrl) {
+                fotoUrl = imgPreview.src || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400";
+            }
+
+            const planEnMemoria = localStorage.getItem('plan_seleccionado') || 'basico';
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerText = "Preparando pasarela segura...";
+            submitBtn.disabled = true;
+
+            const datosPayload = {
+                usuario_id: localStorage.getItem('usuario_id') || null,
+                nombre_mascota: document.getElementById('nombre_mascota').value,
+                especie: document.getElementById('especie').value,
+                raza: document.getElementById('raza').value,
+                foto_url: fotoUrl,
+                notas_medicas: document.getElementById('notas').value,
+                contacto_alternativo: document.getElementById('contacto-alt').value,
+                plan: planEnMemoria,
+                email_dueno: document.getElementById('email_dueno').value,
+                nombre_dueno: document.getElementById('nombre_dueno').value,
+                telefono_dueno: document.getElementById('telefono_dueno').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/registrar-pre-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosPayload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Error en el servidor al generar la pasarela de pago.');
+                    submitBtn.innerText = "Continuar al Pago Seguro";
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert('No se pudo conectar con el servidor backend.');
+                submitBtn.innerText = "Continuar al Pago Seguro";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
