@@ -8,8 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -87,6 +85,7 @@
             </div>
             <div class="form-group">
                 <label>Foto identificadora *</label>
+                <input type="file" id="input-foto-file" accept="image/*" style="display: none;">
                 <button type="button" id="upload-widget-btn" class="btn-upload">
                     <i class="fa-solid fa-camera"></i> Subir Foto de tu Peludo
                 </button>
@@ -121,13 +120,117 @@
             }
         });
 
-        // CONFIGURACIÓN DE TU CLOUDINARY
+        // Configuración de Cloudinary (si decides usar claves personalizadas)
         const CLOUD_NAME = "TU_CLOUD_NAME_AQUÍ"; 
         const UPLOAD_PRESET = "TU_UPLOAD_PRESET_AQUÍ"; 
 
-        const myWidget = cloudinary.createUploadWidget({
-            cloudName: CLOUD_NAME, uploadPreset: UPLOAD_PRESET,
-            cropping: true, multiple: false,
-            clientAllowedFormats: ["png", "jpg", "jpeg", "webp"],
-        }, (error, result) => { 
-            if (!
+        const uploadBtn = document.getElementById("upload-widget-btn");
+        const fileInput = document.getElementById("input-foto-file");
+        const imgPreview = document.getElementById("preview-foto");
+        const fotoUrlInput = document.getElementById("foto-url");
+
+        // Activa el selector de archivos del sistema
+        uploadBtn.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        // Manejo de la imagen seleccionada
+        fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Vista previa local inmediata
+            const localPreviewUrl = URL.createObjectURL(file);
+            imgPreview.src = localPreviewUrl;
+            imgPreview.style.display = "inline-block";
+
+            // Subida automatizada si Cloudinary tiene datos válidos
+            if (CLOUD_NAME !== "TU_CLOUD_NAME_AQUÍ" && UPLOAD_PRESET !== "TU_UPLOAD_PRESET_AQUÍ") {
+                uploadBtn.innerText = "Subiendo imagen...";
+                uploadBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", UPLOAD_PRESET);
+
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.secure_url) {
+                        fotoUrlInput.value = data.secure_url;
+                    } else {
+                        fotoUrlInput.value = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400";
+                    }
+                } catch (err) {
+                    console.error("Error al subir imagen:", err);
+                    fotoUrlInput.value = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400";
+                } finally {
+                    uploadBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Cambiar Foto';
+                    uploadBtn.disabled = false;
+                }
+            } else {
+                // Imagen válida por defecto para pruebas si aún no configuras claves
+                fotoUrlInput.value = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400";
+                uploadBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Cambiar Foto';
+            }
+        });
+
+        // ENVÍO DEL FORMULARIO
+        document.getElementById('form-registro-completo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fotoUrl = document.getElementById('foto-url').value;
+            if(!fotoUrl) {
+                alert("Por favor, selecciona una foto para el perfil de tu mascota antes de continuar.");
+                return;
+            }
+
+            const planEnMemoria = localStorage.getItem('plan_seleccionado') || 'basico';
+            
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerText = "Preparando pasarela segura...";
+            submitBtn.disabled = true;
+
+            const datosPayload = {
+                usuario_id: localStorage.getItem('usuario_id') || null,
+                nombre_mascota: document.getElementById('nombre_mascota').value,
+                especie: document.getElementById('especie').value,
+                raza: document.getElementById('raza').value,
+                foto_url: fotoUrl,
+                notas_medicas: document.getElementById('notas').value,
+                contacto_alternativo: document.getElementById('contacto-alt').value,
+                plan: planEnMemoria,
+                email_dueno: document.getElementById('email_dueno').value,
+                nombre_dueno: document.getElementById('nombre_dueno').value,
+                telefono_dueno: document.getElementById('telefono_dueno').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/registrar-pre-pago', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosPayload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Error en el servidor al generar la pasarela de pago.');
+                    submitBtn.innerText = "Continuar al Pago Seguro";
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert('No se pudo conectar con el servidor backend.');
+                submitBtn.innerText = "Continuar al Pago Seguro";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
